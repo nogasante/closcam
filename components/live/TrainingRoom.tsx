@@ -13,6 +13,8 @@ import type { Scenario } from "@/lib/types";
 import { ConsoleFrame, LeaveLink, MobileBrief, type FlagEntry } from "@/components/console/ConsoleFrame";
 import { HighlightedBody } from "@/components/HighlightedText";
 import { ReportStrip } from "@/components/ReportStrip";
+import { StatusBar } from "@/components/phone/StatusBar";
+import { CheckCheck } from "lucide-react";
 
 function money(value: number): string {
   return `GHS ${value.toFixed(2)}`;
@@ -198,9 +200,10 @@ function RoomPlay({ room, scenario }: { room: Room; scenario: Scenario }) {
       <div className="lg:hidden">
         <MobileBrief objective={room.objective} flags={flags} />
       </div>
-      <div className={`flex min-h-[calc(100dvh-120px)] flex-col lg:min-h-[680px] ${hit ? "phone-hit" : ""} lg:phone`}>
-        <div className="phone-screen min-h-0 flex-1 rounded-none lg:min-h-[640px] lg:rounded-[18px]">
-          <header className="flex items-center justify-between gap-3 border-b border-line px-3 py-2">
+      <div className={`device flex min-h-[calc(100dvh-132px)] flex-col ${hit ? "ring-2 ring-danger" : ""}`}>
+        <div className="device-screen chat-wall min-h-0 flex-1">
+          <StatusBar />
+          <header className="flex items-center justify-between gap-3 border-b border-white/10 bg-black/25 px-3 py-2">
             <div>
               <p className="text-[15px] font-medium">{room.contact}</p>
               <p className="mono text-[12px] text-muted">{room.detail}</p>
@@ -331,7 +334,13 @@ function Message({ line }: { line: Incoming }) {
   }
   return (
     <Arrive>
-      <p className={`bubble ${line.from === "you" ? "bubble-you" : "bubble-them"}`}>{line.text}</p>
+      <p className={`bubble ${line.from === "you" ? "bubble-you" : "bubble-them"}`}>
+        {line.text}
+        <span className="mt-1 flex items-center justify-end gap-1 text-[10px] opacity-70">
+          <span className="mono">14:03</span>
+          {line.from === "you" ? <CheckCheck size={12} aria-hidden="true" /> : null}
+        </span>
+      </p>
     </Arrive>
   );
 }

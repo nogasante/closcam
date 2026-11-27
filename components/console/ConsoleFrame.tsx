@@ -105,7 +105,7 @@ export function MobileBrief({
 
 export function LeaveLink() {
   return (
-    <Link href="/" className="inline-flex min-h-11 items-center text-[13px] font-medium">
+    <Link href="/hub" className="inline-flex min-h-11 items-center text-[13px] font-medium">
       Leave
     </Link>
   );

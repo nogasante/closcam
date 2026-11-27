@@ -15,11 +15,11 @@ CloScam should feel like a serious training product, the way a good operations t
 
 ## Principles we will follow
 
-1. One palette. Warm near-black, warm paper text, one amber accent (the street lamp and the kiosk bulb), and a flat warning red used only when money leaves or a code is given. No purple, no blue neon, no gradient meshes, no glass panels.
-2. One type system. IBM Plex Sans for the interface, IBM Plex Serif for the lesson sentence only, IBM Plex Mono for amounts, numbers, and fake domains. All three are SIL Open Font License 1.1.
+1. Palette after a second pass, closer to a training product than an empty terminal. Navy base, gold for the main action, green for progress and a correct beat, red when money leaves or a code is given. A soft gold wash sits in the page background. No purple neon and no glass panels.
+2. Type. Nunito for titles, Source Sans 3 for the interface, IBM Plex Mono for amounts and numbers. All three are SIL Open Font License 1.1. Icons are Lucide, ISC license.
 3. An 8 pixel grid. Spacing steps are 8, 16, 24, 32, 48. Corners on UI are 6 or 8 pixels. The phone bezel is the only large radius, because it is hardware.
 4. Motion is a change of state. 160 to 240 milliseconds, cubic-bezier(0.2, 0, 0, 1). Messages move 6 pixels, not a bounce. `prefers-reduced-motion` removes the delay and the transform.
-5. 3D is the junction you stand at: a phone on a plinth, a stall with a counter and a sign, and a booth with a back wall and a handset. One lamp explains the amber. Fixed camera, no orbit showcase, no floating labels, no downloaded model pack. The geometry is original. A flat elevation of the same three objects is the low-graphics view, and it is a real view, not an error state.
+5. The centrepiece is a device, not a diorama of boxes. Room cards use original illustrations. The phone frame, status bar, chat wallpaper, and call screen are drawn in the interface. Low-poly model kits were tried in an earlier pass and looked cheap, so they are not used.
 6. The room is the phone. Progress is the thread still on screen, then the notes under it. We do not flip to a new page to tell you what happened.
 7. Copy is specific. Ranks are New, Spotter, Careful, Sharp, Closer. No slogans about potential, empowerment, or unlocking.
 

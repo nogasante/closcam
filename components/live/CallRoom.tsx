@@ -13,6 +13,7 @@ import { blip, startRing, stopRing } from "@/lib/live/sound";
 import { recordCall } from "@/lib/storage";
 import { ConsoleFrame, LeaveLink, MobileBrief, type FlagEntry } from "@/components/console/ConsoleFrame";
 import { ReportStrip } from "@/components/ReportStrip";
+import { StatusBar } from "@/components/phone/StatusBar";
 
 const OTP = "【WhatsApp】你的验证码是 382-194，请勿告诉他人。";
 
@@ -158,8 +159,9 @@ export function CallRoom() {
       <div className="lg:hidden">
         <MobileBrief objective="Hang up. Do not read a code to a caller." flags={flags} />
       </div>
-      <div className="flex min-h-[calc(100dvh-120px)] flex-col lg:phone lg:min-h-[680px]">
-        <div className="phone-screen min-h-0 flex-1 lg:min-h-[640px]">
+      <div className="device flex min-h-[calc(100dvh-132px)] flex-col">
+        <div className="device-screen min-h-0 flex-1 bg-[#10182a]">
+          <StatusBar />
           <header className="border-b border-line px-3 py-3">
             <p className="text-[12px] text-muted">AI simulation. Never share a real PIN or a real code.</p>
             <div className="mt-2 flex flex-wrap gap-2">
@@ -176,7 +178,7 @@ export function CallRoom() {
               ))}
             </div>
           </header>
-          <div className="flex-1 space-y-3 overflow-y-auto px-3 py-4">
+          <div className={`flex-1 space-y-3 overflow-y-auto px-3 py-4 ${ringing ? "flex flex-col justify-center" : ""}`}>
             {!ringing && !active && !ended ? (
               <button type="button" className="btn btn-primary" onClick={() => setRinging(true)}>
                 Start the incoming call

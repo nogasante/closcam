@@ -1,43 +1,22 @@
 "use client";
 
-import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useState, useSyncExternalStore } from "react";
+import { useEffect } from "react";
+import { Flame, Star } from "lucide-react";
 import type { DrillSummary } from "@/lib/scenarios";
 import { surfaceLabel } from "@/lib/scenarios";
 import { useConsent, useExtras, useMounted, useProgress } from "@/lib/storage";
 import { PageShell } from "@/components/PageShell";
-import { JunctionFlat } from "./JunctionFlat";
-import type { Spot } from "./JunctionScene";
+import { RoomArt } from "@/components/phone/RoomArt";
 
-const JunctionScene = dynamic(() => import("./JunctionScene"), {
-  ssr: false,
-  loading: () => <p className="px-3 py-6 text-[14px] text-muted">Building the junction</p>,
-});
-
-const GRAPHICS_EVENT = "closcam-graphics-change";
-
-function readGraphics(): "model" | "flat" {
-  const saved = window.localStorage.getItem("closcam-graphics");
-  if (saved === "flat" || saved === "model") return saved;
-  const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  const narrow = window.matchMedia("(max-width: 1099px)").matches;
-  const connection = (navigator as Navigator & { connection?: { saveData?: boolean } }).connection;
-  if (reduce || narrow || connection?.saveData) return "flat";
-  return "model";
-}
-
-function useGraphics(): "model" | "flat" {
-  return useSyncExternalStore(
-    (onStoreChange) => {
-      window.addEventListener(GRAPHICS_EVENT, onStoreChange);
-      return () => window.removeEventListener(GRAPHICS_EVENT, onStoreChange);
-    },
-    readGraphics,
-    () => "flat",
-  );
-}
+const RANKS = [
+  { xp: 0, name: "New" },
+  { xp: 100, name: "Spotter" },
+  { xp: 300, name: "Careful" },
+  { xp: 600, name: "Sharp" },
+  { xp: 1000, name: "Closer" },
+];
 
 export function TrainingHub({ drills }: { drills: DrillSummary[] }) {
   const router = useRouter();
@@ -45,8 +24,6 @@ export function TrainingHub({ drills }: { drills: DrillSummary[] }) {
   const consent = useConsent();
   const progress = useProgress();
   const extras = useExtras();
-  const mode = useGraphics();
-  const [hover, setHover] = useState("Site map. Phone, stall, or booth.");
 
   useEffect(() => {
     if (mounted && !consent) router.replace("/disclaimer");
@@ -59,24 +36,14 @@ export function TrainingHub({ drills }: { drills: DrillSummary[] }) {
     if (!result) return sum;
     return sum + (result.correct ? 100 : 40);
   }, 0);
-  const rank = xp >= 1000 ? "Closer" : xp >= 600 ? "Sharp" : xp >= 300 ? "Careful" : xp >= 100 ? "Spotter" : "New";
-  const next = drills.find((drill) => !progress.results[drill.id]) ?? drills[0];
-
-  function select(spot: Spot) {
-    if (spot === "phone" && next) router.push(`/drills/${next.id}`);
-    if (spot === "kiosk") router.push("/drills/s09-agent-phone");
-    if (spot === "booth") router.push("/call");
-  }
-
-  function setGraphics(nextMode: "model" | "flat") {
-    window.localStorage.setItem("closcam-graphics", nextMode);
-    window.dispatchEvent(new Event(GRAPHICS_EVENT));
-  }
+  const rank = [...RANKS].reverse().find((item) => xp >= item.xp)?.name ?? "New";
+  const nextRank = RANKS.find((item) => item.xp > xp);
+  const streak = streakOf(progress.results);
 
   if (!mounted || !consent) {
     return (
       <PageShell>
-        <h1 className="text-[28px] font-medium tracking-tight">CloScam</h1>
+        <h1 className="text-3xl font-extrabold">CloScam</h1>
       </PageShell>
     );
   }
@@ -85,80 +52,72 @@ export function TrainingHub({ drills }: { drills: DrillSummary[] }) {
     <PageShell
       wide
       action={
-        <p className="mono text-[12px] text-muted">
-          {xp} XP · {rank}
+        <p className="flex items-center gap-3 text-sm font-bold">
+          <Flame size={16} className="text-danger" aria-hidden="true" />
+          {streak}
+          <Star size={16} className="text-green" aria-hidden="true" />
+          {xp} XP
         </p>
       }
     >
-      <div className="grid items-start gap-8 lg:grid-cols-[minmax(0,1.05fr)_minmax(300px,0.95fr)]">
-        <section>
-          <p className="text-[12px] tracking-wide text-muted uppercase">Junction</p>
-          <h1 className="mt-2 text-[32px] leading-none font-medium tracking-tight">Walk it before you pay.</h1>
-          <p className="mt-3 max-w-md text-[15px] text-muted">
-            CloScam: shut scammers out before they get in.
+      <div className="lift px-4 py-4 sm:px-5">
+        <p className="text-xs font-bold tracking-wide text-green uppercase">Mission map</p>
+        <div className="mt-1 flex flex-wrap items-end justify-between gap-3">
+          <h1 className="text-3xl font-extrabold">Walk it before you pay.</h1>
+          <p className="text-sm text-muted">
+            {rank}
+            {nextRank ? ` · ${nextRank.xp - xp} XP to ${nextRank.name}` : ""}
           </p>
-          <div className="relative mt-6 h-[240px] border border-line lg:h-[420px]">
-            {mode === "model" ? <JunctionScene onSelect={select} /> : <JunctionFlat onSelect={select} />}
-          </div>
-          <div className="mt-3 flex items-center justify-between gap-3">
-            <p className="text-[13px] text-muted">{hover}</p>
-            <button
-              type="button"
-              className="min-h-11 shrink-0 text-[13px]"
-              onClick={() => setGraphics(mode === "model" ? "flat" : "model")}
-              onMouseEnter={() =>
-                setHover(mode === "model" ? "Flat elevation of the same junction." : "3D site model.")
-              }
-            >
-              {mode === "model" ? "Flat view" : "3D model"}
-            </button>
-          </div>
-        </section>
-        <section>
-          <div className="flex items-baseline justify-between gap-3">
-            <h2 className="text-[12px] tracking-wide text-muted uppercase">Rooms</h2>
-            <p className="text-[13px] text-muted">
-              {cleared} of {drills.length} answered · {correct} first-try correct
-            </p>
-          </div>
-          <ul className="mt-3 divide-y divide-line border-y border-line">
-            {drills.map((drill) => {
-              const done = progress.results[drill.id];
-              return (
-                <li key={drill.id}>
-                  <Link href={`/drills/${drill.id}`} className="flex min-h-14 items-baseline justify-between gap-3 py-3">
+        </div>
+        <div className="mt-4 h-2 overflow-hidden rounded-full bg-[#0e1626]">
+          <div className="h-full bg-safe" style={{ width: `${Math.min(100, (xp / 1000) * 100)}%` }} />
+        </div>
+        <p className="mt-2 text-sm text-muted">
+          {cleared} of {drills.length} rooms answered · {correct} first-try correct
+          {extras.call === true ? " · Call refused" : ""}
+          {extras.protect ? " · Protection done" : ""}
+        </p>
+      </div>
+      <ul className="mt-6 grid gap-4 sm:grid-cols-2">
+        {drills.map((drill) => {
+          const done = progress.results[drill.id];
+          return (
+            <li key={drill.id}>
+              <Link href={`/drills/${drill.id}`} className="lift block overflow-hidden">
+                <RoomArt kind={drill.surfaces.join(" ")} />
+                <div className="px-4 py-3">
+                  <div className="flex items-center justify-between gap-2 text-xs font-bold text-muted uppercase">
                     <span>
-                      <span className="mono text-[12px] text-muted">
-                        {String(drill.number).padStart(2, "0")}
-                      </span>{" "}
-                      <span className="text-[15px]">{drill.title}</span>
-                      <span className="mt-1 block text-[12px] text-muted">
-                        {drill.surfaces.map((surface) => surfaceLabel(surface)).join(" · ")} ·{" "}
-                        {drill.difficulty === "easy" ? "Easy" : "Medium"}
-                        {drill.headline ? " · Start here" : ""}
-                      </span>
+                      {String(drill.number).padStart(2, "0")} · {drill.surfaces.map((item) => surfaceLabel(item)).join(" · ")}
                     </span>
-                    <span className="text-[12px] text-muted">{done ? (done.correct ? "Met" : "Missed") : "Open"}</span>
-                  </Link>
-                </li>
-              );
-            })}
-          </ul>
-          <div className="mt-4 grid gap-2 sm:grid-cols-2">
-            <Link href="/call" className="btn btn-primary">
-              Live call
-            </Link>
-            <Link href="/protect" className="btn btn-secondary">
-              Protection
-            </Link>
-          </div>
-          <p className="mt-4 text-[13px] text-muted">
-            Takeover has two doors. A PulseLink security call, or a saved contact who asks for a code. Either one ends with your contacts being asked for money.
-            {extras.call === true ? " Call: refused." : ""}
-            {extras.protect ? " Protection: done." : ""}
-          </p>
-        </section>
+                    <span>{done ? (done.correct ? "Met" : "Missed") : drill.difficulty}</span>
+                  </div>
+                  <p className="mt-1 text-lg font-extrabold">{drill.title}</p>
+                  {drill.headline ? <p className="text-sm font-bold text-green">Start here</p> : null}
+                </div>
+              </Link>
+            </li>
+          );
+        })}
+      </ul>
+      <div className="mt-6 grid gap-3 sm:grid-cols-2">
+        <Link href="/call" className="btn btn-primary">
+          Live call
+        </Link>
+        <Link href="/protect" className="btn btn-secondary">
+          Protection
+        </Link>
       </div>
     </PageShell>
   );
+}
+
+function streakOf(results: Record<string, { correct: boolean; at: string }>): number {
+  const ordered = Object.values(results).sort((a, b) => a.at.localeCompare(b.at));
+  let count = 0;
+  for (let index = ordered.length - 1; index >= 0; index -= 1) {
+    if (!ordered[index]?.correct) break;
+    count += 1;
+  }
+  return count;
 }

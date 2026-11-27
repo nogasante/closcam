@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import { Star } from "lucide-react";
 import { summarise } from "@/lib/scoring";
 import { clearProgress, useProgress } from "@/lib/storage";
 import { PageShell } from "./PageShell";
@@ -17,7 +18,14 @@ export function ScoreView({ total }: { total: number }) {
 
   return (
     <PageShell>
-      <h1 className="text-3xl font-bold tracking-tight">Your practice score</h1>
+      <h1 className="text-3xl font-extrabold">Results</h1>
+      <div className="mt-4 flex gap-2" aria-label="Stars">
+        {[0, 1, 2].map((index) => {
+          const stars = summary.correct >= 8 ? 3 : summary.correct >= 5 ? 2 : summary.correct > 0 ? 1 : 0;
+          const on = index < stars;
+          return <Star key={index} size={28} className={on ? "fill-green text-green" : "text-line"} aria-hidden="true" />;
+        })}
+      </div>
       <p className="mt-2 text-muted">
         First answers only. Untried drills are not marked wrong. Nothing here has your name.
       </p>
@@ -49,8 +57,8 @@ export function ScoreView({ total }: { total: number }) {
         <Link href="/drills" className="btn btn-secondary">
           Pick a drill
         </Link>
-        <Link href="/" className="btn btn-secondary">
-          Home
+        <Link href="/hub" className="btn btn-secondary">
+          Mission map
         </Link>
       </div>
       <div className="mt-8">

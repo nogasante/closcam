@@ -10,7 +10,7 @@ export function DisclaimerView() {
 
   function accept() {
     setConsent();
-    router.push("/");
+    router.push("/hub");
   }
 
   return (

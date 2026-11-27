@@ -49,10 +49,17 @@ No backend, database, or server secret is used.
 - Next.js 16 (App Router) and React 19, for the training app
 - TypeScript 5
 - Tailwind CSS 4
+- Framer Motion, MIT, for message entrance
+- Lucide icons, ISC
+- Nunito and Source Sans 3, SIL Open Font License 1.1, via Fontsource
+- IBM Plex Mono, SIL Open Font License 1.1, via Fontsource, for amounts and numbers
+- Vercel AI SDK, Apache-2.0, for the optional live-call line
 - ESLint 9, with eslint-config-next
 - Node.js
 - Vercel, for the public deploy
 - GitHub, for the public repository
+
+Room art, the phone frame, and the chat wallpaper are original and drawn in the app. No downloaded 3D models. Low-poly kits were not used after a box scene read as a placeholder.
 
 No database, no authentication service, no payments SDK, and no analytics SDK. Next.js anonymous framework telemetry is turned off in the npm scripts (`NEXT_TELEMETRY_DISABLED=1`). Drill scripts are static JSON in `data/scenarios.json`. Optional progress is stored only in the browser, under the key `closcam-progress`, and holds drill ids, first-try results, and a timestamp. No name is attached.
 

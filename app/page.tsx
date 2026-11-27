@@ -1,6 +1,5 @@
-import { TrainingHub } from "@/components/hub/TrainingHub";
-import { drillSummaries } from "@/lib/scenarios";
+import { Landing } from "@/components/landing/Landing";
 
 export default function HomePage() {
-  return <TrainingHub drills={drillSummaries()} />;
+  return <Landing />;
 }
