@@ -37,7 +37,7 @@ function forModel(text: string): string {
 }
 
 function pack(
-  risk: Risk,
+  risk: Risk | "caution",
   summary: string,
   flags: CheckFlag[],
   next: string,
@@ -57,12 +57,28 @@ function pack(
   };
 }
 
-async function communityFirst(numbers: string[], hosts: string[]): Promise<CommunityLookup | null> {
+async function communityFirst(numbers: string[], hosts: string[]) {
   const phone = numbers.map((item) => normalizePhone(item)).find((item): item is string => Boolean(item));
-  if (phone) return lookupSubject("phone", phone);
+  if (phone) return { ...(await lookupSubject("phone", phone)), subject: "number" as const };
   const host = hosts.map((item) => normalizeUrl(item)).find((item): item is string => Boolean(item));
-  if (host) return lookupSubject("url", host);
+  if (host) return { ...(await lookupSubject("url", host)), subject: "link" as const };
   return null;
+}
+
+function withCommunity(
+  risk: Risk,
+  summary: string,
+  community: Awaited<ReturnType<typeof communityFirst>>,
+): { risk: Risk | "caution"; summary: string } {
+  if (!community || community.reportCount < 1 || community.status === "clean_unknown") {
+    return { risk, summary };
+  }
+  const thing = community.subject;
+  const people = community.reportCount === 1 ? "1 person reported" : `${community.reportCount} people reported`;
+  if (community.status === "flagged") {
+    return { risk: "high", summary: `${people} this ${thing}. Treat it as high risk.` };
+  }
+  return { risk: risk === "high" ? "high" : "caution", summary: `${people} this ${thing}; not yet verified.` };
 }
 
 export async function POST(request: Request) {
@@ -87,7 +103,8 @@ export async function POST(request: Request) {
   const model = google ?? gateway;
   const numbers = extractNumbers(text);
   const community = await communityFirst(numbers, extractHosts(text));
-  if (!model) return Response.json(pack(rules.risk, rules.summary, rules.flags, rules.next, numbers, community, "rules"));
+  const ruled = withCommunity(rules.risk, rules.summary, community);
+  if (!model) return Response.json(pack(ruled.risk, ruled.summary, rules.flags, rules.next, numbers, community, "rules"));
 
   try {
     const { object } = await generateObject({
@@ -103,10 +120,11 @@ export async function POST(request: Request) {
     for (const flag of object.flags) {
       if (!flags.some((item) => item.label === flag.label)) flags.push(flag);
     }
+    const merged = withCommunity(higherRisk(rules.risk, object.risk), object.summary, community);
     return Response.json(
-      pack(higherRisk(rules.risk, object.risk), object.summary, flags, object.next, numbers, community, google ? "gemini" : "gateway"),
+      pack(merged.risk, merged.summary, flags, object.next, numbers, community, google ? "gemini" : "gateway"),
     );
   } catch {
-    return Response.json(pack(rules.risk, rules.summary, rules.flags, rules.next, numbers, community, "rules"));
+    return Response.json(pack(ruled.risk, ruled.summary, rules.flags, rules.next, numbers, community, "rules"));
   }
 }

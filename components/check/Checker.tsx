@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { PageShell } from "@/components/PageShell";
 import { SiteFooter } from "@/components/SiteHeader";
 import { REPORT_LINES } from "@/lib/sources";
@@ -50,10 +51,7 @@ export function Checker() {
 
   return (
     <PageShell>
-      <h1 className="text-3xl font-extrabold">Scam checker</h1>
-      <p className="mt-3 text-muted">
-        Paste a message, link, phone number, or business name. Do not paste a real PIN or a code from your phone. This is a guide, not a guarantee.
-      </p>
+      <h1>Check a message</h1>
       <form onSubmit={onSubmit} className="mt-6 grid gap-3">
         <label className="sr-only" htmlFor="check-text">
           Message, link, number, or name
@@ -65,10 +63,10 @@ export function Checker() {
           rows={6}
           maxLength={2000}
           className="say-field min-h-32 py-3"
-          placeholder="Paste it here"
+          placeholder="No names, PINs or codes."
         />
         <button type="submit" className="btn btn-primary" disabled={pending}>
-          {pending ? "Checking" : "Check"}
+          {pending ? "Checking" : "Check message"}
         </button>
       </form>
       {error ? <p className="mt-4 text-sm text-miss">{error}</p> : null}
@@ -88,10 +86,13 @@ export function Checker() {
             </ul>
           ) : null}
           <p className="mt-4">{verdict.next}</p>
-          {verdict.community && verdict.community.status !== "clean_unknown" ? (
+          {verdict.community && verdict.community.status !== "clean_unknown" && verdict.numbers?.[0] ? (
             <p className="mt-4 text-sm">
-              CloScam community: {verdict.community.status === "flagged" ? "flagged" : "reported, unverified"} ({verdict.community.reportCount}).
-              {verdict.community.disputeOpen ? " A dispute is open." : ""}
+              <Link
+                href={`/report?dispute=1&type=phone&value=${encodeURIComponent(verdict.numbers[0])}`}
+              >
+                Dispute this flag
+              </Link>
             </p>
           ) : null}
           {verdict.numbers && verdict.numbers.length > 0 ? (
@@ -110,9 +111,6 @@ export function Checker() {
           </div>
         </article>
       ) : null}
-      <p className="mt-8 text-xs text-muted">
-        Osebow (osebow.com, by Cecil Anglow) is a community fraud database. CloScam links there and does not read its data.
-      </p>
       <SiteFooter />
     </PageShell>
   );

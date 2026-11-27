@@ -8,7 +8,7 @@ export function SiteHeader({ action }: { action?: React.ReactNode }) {
           CloScam
         </Link>
         <div className="flex items-center gap-4">
-          <Link href="/tools" className="hidden min-h-11 items-center text-sm font-semibold lg:inline-flex">
+          <Link href="/tools" className="inline-flex min-h-11 items-center text-sm font-semibold">
             Tools
           </Link>
           {action}
@@ -21,25 +21,7 @@ export function SiteHeader({ action }: { action?: React.ReactNode }) {
 export function SiteFooter() {
   return (
     <footer className="mx-auto w-full max-w-6xl px-4 py-12 text-sm text-[#d5dbe4] lg:px-8">
-      <div className="flex items-center justify-between">
-        <p>CloScam</p>
-        <p className="flex gap-4">
-          <Link href="/tools" className="underline">
-            Tools
-          </Link>
-          <span>292 · 18555</span>
-        </p>
-      </div>
-      <p className="mt-3 max-w-xl text-xs leading-relaxed">
-        <a className="underline" href="https://community.spline.design/file/5209eac0-5eb0-4577-9f00-402a1561c0cf">
-          iPhone Mockup
-        </a>{" "}
-        by vexus, a rendered loop of the remixed Spline Community scene,{" "}
-        <a className="underline" href="https://creativecommons.org/licenses/by/4.0/">
-          CC BY 4.0
-        </a>
-        .
-      </p>
+      <Link href="/credits">Credits</Link>
     </footer>
   );
 }

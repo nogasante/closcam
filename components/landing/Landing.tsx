@@ -39,7 +39,7 @@ export function Landing() {
         <div className="mx-auto flex w-full max-w-6xl items-center justify-between px-4 py-3 lg:px-8">
           <p className="display text-[17px] font-extrabold">CloScam</p>
           <div className="flex items-center gap-4">
-          <Link href="/tools" className="hidden min-h-11 items-center text-sm font-semibold lg:inline-flex">
+          <Link href="/tools" className="inline-flex min-h-11 items-center text-sm font-semibold">
             Tools
           </Link>
           <Link
@@ -56,26 +56,26 @@ export function Landing() {
       <section className="mx-auto grid w-full max-w-6xl items-center gap-10 px-4 pt-10 lg:grid-cols-[1fr_1.05fr] lg:gap-8 lg:px-8 lg:pt-16">
         <div>
           <motion.h1
-            className="text-4xl leading-tight font-extrabold sm:text-6xl"
-            initial={reduce ? false : { opacity: 0, y: 14 }}
+            className="t-display max-w-[12ch]"
+            initial={reduce ? false : { opacity: 0.7, y: 8 }}
             animate={rise ?? { opacity: 1, y: 0 }}
-            transition={{ duration: 0.45 }}
+            transition={{ duration: 0.3 }}
           >
             Shut scammers out before they get in.
           </motion.h1>
           <motion.p
             className="mt-4 max-w-xl text-lg text-[#d5dbe4]"
-            initial={reduce ? false : { opacity: 0, y: 14 }}
+            initial={reduce ? false : { opacity: 0.7, y: 8 }}
             animate={rise ?? { opacity: 1, y: 0 }}
-            transition={{ duration: 0.45, delay: reduce ? 0 : 0.08 }}
+            transition={{ duration: 0.3 }}
           >
-            Practise the texts, chats, and calls people in Ghana actually get. You keep the phone. Nothing real is sent.
+            Nothing real is sent.
           </motion.p>
           <motion.div
             className="mt-8"
-            initial={reduce ? false : { opacity: 0, y: 14 }}
+            initial={reduce ? false : { opacity: 0.7, y: 8 }}
             animate={rise ?? { opacity: 1, y: 0 }}
-            transition={{ duration: 0.45, delay: reduce ? 0 : 0.16 }}
+            transition={{ duration: 0.3 }}
           >
             <Link ref={heroCta} href={start} className="btn btn-primary sm:w-auto sm:px-6">
               Start training
@@ -83,9 +83,9 @@ export function Landing() {
           </motion.div>
           <motion.div
             className="mt-8 grid max-w-xl grid-cols-3 gap-3"
-            initial={reduce ? false : { opacity: 0, y: 14 }}
+            initial={reduce ? false : { opacity: 0.7, y: 8 }}
             animate={rise ?? { opacity: 1, y: 0 }}
-            transition={{ duration: 0.45, delay: reduce ? 0 : 0.24 }}
+            transition={{ duration: 0.3 }}
           >
             <Stat value={24124} label="incidents, 2025" />
             <Stat value={37} prefix="GH¢" label="million at risk" />
@@ -100,12 +100,12 @@ export function Landing() {
         <HeroStage />
       </section>
       <section className="mx-auto mt-16 grid w-full max-w-6xl gap-10 px-4 pb-4 md:grid-cols-3 lg:px-8">
-        {STEPS.map((step, index) => (
+        {STEPS.map((step) => (
           <motion.article
             key={step.title}
-            initial={reduce ? false : { opacity: 0, y: 12 }}
+            initial={reduce ? false : { opacity: 0.7, y: 8 }}
             animate={rise ?? { opacity: 1, y: 0 }}
-            transition={{ duration: 0.4, delay: reduce ? 0 : 0.2 + index * 0.08 }}
+            transition={{ duration: 0.3 }}
           >
             <step.icon size={22} className="text-green" aria-hidden="true" />
             <h2 className="mt-3 text-lg font-extrabold">{step.title}</h2>

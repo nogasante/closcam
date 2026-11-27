@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
 import { PageShell } from "@/components/PageShell";
 import { SiteFooter } from "@/components/SiteHeader";
 
@@ -37,10 +36,7 @@ export function Developers() {
 
   return (
     <PageShell>
-      <h1 className="text-3xl font-extrabold">Developers</h1>
-      <p className="mt-3 text-muted">
-        A free key can read community reports. It does not include who reported them, or any screenshot.
-      </p>
+      <h1>Developers</h1>
       <form onSubmit={onSubmit} className="mt-6 grid gap-3">
         <input name="website" tabIndex={-1} autoComplete="off" className="absolute h-0 w-0 opacity-0" aria-hidden="true" />
         <label className="grid gap-1 text-sm">
@@ -48,7 +44,7 @@ export function Developers() {
           <input name="label" required className="say-field" placeholder="My project" />
         </label>
         <button type="submit" className="btn btn-primary">
-          Create a free key
+          Create key
         </button>
       </form>
       {error ? <p className="mt-3 text-sm text-miss">{error}</p> : null}
@@ -59,12 +55,8 @@ export function Developers() {
       <pre className="mt-2 overflow-x-auto rounded-xl bg-[#12161b] p-3 text-sm">{JS}</pre>
       <p className="mt-4 text-sm">
         <a className="underline" href="/api/v1/openapi.json">
-          OpenAPI
+          Open the spec
         </a>
-        . Spec path: /api/v1/lookup. Sixty reads an hour per key.
-      </p>
-      <p className="mt-4 text-sm text-muted">
-        <Link href="/tools">Back to tools</Link>
       </p>
       <SiteFooter />
     </PageShell>

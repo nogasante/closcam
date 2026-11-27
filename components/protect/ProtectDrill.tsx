@@ -74,8 +74,7 @@ export function ProtectDrill() {
           <div className="flex-1 overflow-y-auto px-4 py-4">
             {done ? (
               <div className="grid gap-4">
-                <h1 className="text-2xl font-extrabold">Protection {correctCount} / {STEPS.length}</h1>
-                <p className="text-muted">First answers only. You can run a step again, and the first one stays on the record.</p>
+                <h1 className="nums">Protection {correctCount} / {STEPS.length}</h1>
                 <ul className="grid gap-2 text-sm">
                   {STEPS.map((item) => (
                     <li key={item.id}>
@@ -153,8 +152,7 @@ function StepBody({
     }
     return (
       <div className="grid gap-3">
-        <p>Set a 6-digit PIN, then add an email you can open.</p>
-        <p className="text-sm text-muted">The PIN is not a code from a text message, and it is not for a caller.</p>
+        <p>Set a PIN. Add an email. Do not share either.</p>
       </div>
     );
   }
@@ -183,8 +181,7 @@ function StepBody({
   }
   return (
     <div className="grid gap-3">
-      <p>You cannot open the account. Friends say you asked them for money.</p>
-      <p className="text-sm text-muted">Recovery is in the app: verify your number, then check linked devices.</p>
+      <p>The account is gone. Friends were asked for money.</p>
     </div>
   );
 }

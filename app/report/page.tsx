@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import type { Metadata } from "next";
 import { ReportForm } from "@/components/report/ReportForm";
 
@@ -6,5 +7,9 @@ export const metadata: Metadata = {
 };
 
 export default function ReportPage() {
-  return <ReportForm />;
+  return (
+    <Suspense>
+      <ReportForm />
+    </Suspense>
+  );
 }

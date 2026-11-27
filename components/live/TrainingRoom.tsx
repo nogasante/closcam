@@ -11,7 +11,6 @@ import { shuffleChoices } from "@/lib/shuffle";
 import { recordFirstTry, useProgress } from "@/lib/storage";
 import type { Scenario } from "@/lib/types";
 import { ConsoleFrame, LeaveLink, type FlagEntry } from "@/components/console/ConsoleFrame";
-import { HighlightedBody } from "@/components/HighlightedText";
 import { ReportStrip } from "@/components/ReportStrip";
 import { StatusBar } from "@/components/phone/StatusBar";
 import { CheckCheck, ChevronLeft, Info, Phone, Video } from "lucide-react";
@@ -381,7 +380,6 @@ function RoomPlay({ room, scenario }: { room: Room; scenario: Scenario }) {
                 correct={option?.correct ?? false}
                 nextId={nextId}
                 already={Boolean(progress.results[room.id] && !answered)}
-                lines={[...visibleIncoming.map((line) => line.text), ...trail.flatMap((event) => (event.kind === "chat" || event.kind === "sms" ? [event.text] : []))]}
               />
             ) : null}
             {phase === "follow" && !playingSite ? (
@@ -463,7 +461,7 @@ function SiteCard({
       <p className="mono text-[12px] text-miss">{url}</p>
       <p className="mt-2 font-medium">{title}</p>
       <p className="mt-2 text-[14px] text-muted">{body}</p>
-      <p className="mt-2 text-[13px]">Training only. Do not type a real PIN. Nothing you enter is saved.</p>
+      <p className="mt-2 text-sm">Do not type a real PIN.</p>
       <div className="mt-3 grid gap-2">
         <button type="button" className="btn btn-secondary" onClick={onClose}>
           Enter a code, then leave
@@ -476,26 +474,18 @@ function SiteCard({
   );
 }
 
-function ReplayLine({ text }: { text: string }) {
-  const report = scanFlags(text);
-  if (report.matches.length === 0) return text;
-  return <HighlightedBody text={text} report={report} />;
-}
-
 function Debrief({
   room,
   scenario,
   correct,
   nextId,
   already,
-  lines,
 }: {
   room: Room;
   scenario: Scenario;
   correct: boolean;
   nextId: string | null;
   already: boolean;
-  lines: string[];
 }) {
   const reduce = useReducedMotion();
   return (
@@ -505,25 +495,13 @@ function Debrief({
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: reduce ? 0 : 0.28 }}
     >
-      <p className="text-lg font-extrabold">{correct ? "Objective met" : "Objective missed"}</p>
-      <p className="lesson">{scenario.lesson}</p>
-      {lines.length > 0 ? (
-        <div className="grid gap-2">
-          <p className="text-[12px] tracking-wide text-muted uppercase">Replay</p>
-          {lines.map((line, index) => (
-            <div key={`${index}-${line.slice(0, 24)}`} className="border-l border-line pl-3 text-[14px] leading-relaxed">
-              <ReplayLine text={line} />
-            </div>
-          ))}
-        </div>
-      ) : null}
-      {already ? <p className="text-[13px] text-muted">Your first answer is the one on the record.</p> : null}
+      <p className="text-lg font-extrabold">{correct ? "Met" : "Missed"}</p>
+      <p>{scenario.lesson}</p>
+      {already ? <p className="text-sm text-muted">First answer stays.</p> : null}
       {room.reveal ? (
-        <div className="border border-line px-3 py-3">
-          <p className="text-[12px] tracking-wide text-muted uppercase">What the text said</p>
-          <p className="mt-2 text-[15px]">{room.reveal.original}</p>
-          <p className="mt-2 text-[15px]">{room.reveal.english}</p>
-          <p className="mt-2 text-[14px] text-muted">{room.reveal.why}</p>
+        <div>
+          <p>{room.reveal.english}</p>
+          <p className="mt-2 text-sm text-muted">{room.reveal.why}</p>
         </div>
       ) : null}
       <ul className="grid gap-2">
@@ -545,7 +523,7 @@ function Debrief({
           </Link>
         ) : (
           <Link href="/score" className="btn btn-primary">
-            Practice score
+            See results
           </Link>
         )}
         <Link href={`/drills/${room.id}`} className="inline-flex min-h-11 items-center text-sm text-muted">

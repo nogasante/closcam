@@ -39,13 +39,10 @@ export function ScoreView({ total }: { total: number }) {
           );
         })}
       </div>
-      <p className="mt-2 text-muted">
-        First answers only. Untried drills are not marked wrong. Nothing here has your name.
-      </p>
-      <p className="mt-5 text-5xl font-bold tracking-tight">
+      <p className="t-display nums mt-4">
         <CountUp to={summary.correct} /> / {summary.total}
       </p>
-      <p className="mt-1 text-sm font-semibold text-muted">correct on the first try</p>
+      <p className="mt-1 text-sm text-muted">First try</p>
       {summary.percentage !== null ? (
         <p className="mt-3 text-2xl font-bold">{summary.percentage}%</p>
       ) : (
@@ -53,10 +50,8 @@ export function ScoreView({ total }: { total: number }) {
           {summary.attempted} of {summary.total} drills tried. Finish all 10 to see a percentage.
         </p>
       )}
-      {summary.band ? <p className="mt-4 font-semibold">{summary.band}</p> : (
-        <p className="mt-4">You have not finished a drill yet.</p>
-      )}
-      <p className="mt-4 text-sm text-muted">Protection {protectCorrect} / 4 on the first try.</p>
+      {summary.band ? <p className="mt-4">{summary.band}</p> : null}
+      <p className="nums mt-4 text-sm text-muted">Protection {protectCorrect} / 4</p>
       <ul className="mt-6 grid gap-4">
         {scenarios.map((scenario, index) => {
           const result = progress.results[scenario.id];
@@ -71,21 +66,16 @@ export function ScoreView({ total }: { total: number }) {
               <p className="font-extrabold">
                 {scenario.number}. {scenario.title}
               </p>
-              {result ? (
-                <p className="mt-1 text-sm text-muted">
-                  {result.correct ? "You took the safe move. " : "Your first answer missed it. Safe move: "}
-                  {safe}
-                </p>
-              ) : (
-                <p className="mt-1 text-sm text-muted">Not tried yet. Safe move: {safe}</p>
-              )}
+              <p className="mt-1 text-sm text-muted">
+                {result ? (result.correct ? "Met" : `Missed. ${safe}`) : "Open"}
+              </p>
             </motion.li>
           );
         })}
       </ul>
       <div className="mt-6">
         <Link href="/checklist" className="btn btn-primary">
-          Open the checklist
+          Open checklist
         </Link>
         <p className="mt-4 flex flex-wrap gap-x-4 gap-y-2 text-sm">
           <Link href="/drills" className="inline-flex min-h-11 items-center text-muted">
@@ -99,11 +89,11 @@ export function ScoreView({ total }: { total: number }) {
       <div className="mt-6">
         {confirmClear ? (
           <button type="button" className="min-h-11 text-sm text-muted" onClick={() => clearProgress()}>
-            Yes, clear the score on this phone
+            Clear score
           </button>
         ) : (
           <button type="button" className="min-h-11 text-sm text-muted" onClick={() => setConfirmClear(true)}>
-            Clear this phone&apos;s practice score
+            Clear score
           </button>
         )}
       </div>

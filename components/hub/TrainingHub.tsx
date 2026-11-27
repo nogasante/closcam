@@ -6,7 +6,7 @@ import { useEffect, useSyncExternalStore } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import { Flame, Star } from "lucide-react";
 import type { DrillSummary } from "@/lib/scenarios";
-import { useConsent, useExtras, useMounted, useProgress } from "@/lib/storage";
+import { useConsent, useMounted, useProgress } from "@/lib/storage";
 import { PageShell } from "@/components/PageShell";
 import { SiteFooter } from "@/components/SiteHeader";
 import { RoomArt } from "@/components/phone/RoomArt";
@@ -25,14 +25,12 @@ export function TrainingHub({ drills }: { drills: DrillSummary[] }) {
   const mounted = useMounted();
   const consent = useConsent();
   const progress = useProgress();
-  const extras = useExtras();
 
   useEffect(() => {
     if (mounted && !consent) router.replace("/disclaimer");
   }, [mounted, consent, router]);
 
   const cleared = drills.filter((drill) => progress.results[drill.id]).length;
-  const correct = drills.filter((drill) => progress.results[drill.id]?.correct).length;
   const xp = drills.reduce((sum, drill) => {
     const result = progress.results[drill.id];
     if (!result) return sum;
@@ -85,11 +83,6 @@ export function TrainingHub({ drills }: { drills: DrillSummary[] }) {
             transition={{ duration: reduce ? 0 : 0.7, ease: [0.2, 0.8, 0.2, 1] }}
           />
         </div>
-        <p className="mt-2 text-sm text-muted">
-          {cleared} of {drills.length} rooms answered · {correct} first-try correct
-          {extras.call === true ? " · Call refused" : ""}
-          {extras.protect ? " · Protection done" : ""}
-        </p>
       </div>
       <ul className="mt-6 grid gap-4 sm:grid-cols-2">
         {drills.map((drill) => {
@@ -124,7 +117,7 @@ export function TrainingHub({ drills }: { drills: DrillSummary[] }) {
       </ul>
       <div className="mt-8">
         <Link href="/call" className="btn btn-primary sm:w-auto sm:px-6">
-          Live call
+          Start call
         </Link>
         <Link href="/protect" className="mt-4 inline-flex min-h-11 items-center text-sm text-muted">
           Protection

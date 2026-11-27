@@ -9,6 +9,7 @@ export function CountUp({ to, duration = 900 }: { to: number; duration?: number 
 
   useEffect(() => {
     if (reduce !== false) return;
+    if (window.matchMedia("(max-width: 1023px)").matches) return;
     const start = performance.now();
     let frame = 0;
     const tick = (now: number) => {

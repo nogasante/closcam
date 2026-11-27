@@ -13,9 +13,6 @@ type DrillScript = {
   script: string;
 };
 
-const DISCLAIMER =
-  "This is a training aid, not a decision that a message is or is not a scam. It does not send your text anywhere.";
-
 export function ToolsClient({ drills }: { drills: DrillScript[] }) {
   const mounted = useMounted();
   const [tab, setTab] = useState<"drill" | "paste">("drill");
@@ -39,11 +36,7 @@ export function ToolsClient({ drills }: { drills: DrillScript[] }) {
         <Link href="/report" className="inline-flex min-h-11 items-center">Report</Link>
         <Link href="/developers" className="inline-flex min-h-11 items-center">Developers</Link>
       </p>
-      <p className="mt-2 text-muted">
-        A rule list for urgency, a PIN or code, &quot;do not call&quot;, a payment link, a too-good
-        price, and an unofficial-looking number.
-      </p>
-      <p className="mt-3 rounded-2xl border border-line bg-card px-3 py-3 text-sm">{DISCLAIMER}</p>
+      <p className="mt-2 text-sm text-muted">Text stays on this phone.</p>
       <div className="mt-4 grid grid-cols-2 gap-2" role="tablist" aria-label="Practice tool">
         <button
           type="button"
