@@ -1,8 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
-import { useReducedMotion } from "framer-motion";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { motion, useReducedMotion } from "framer-motion";
 import { scanFlags } from "@/lib/flags";
 import { getRoom, TRAINING_BALANCE, type Follow, type Incoming, type Room } from "@/lib/live/rooms";
 import { blip, lossTone } from "@/lib/live/sound";
@@ -11,6 +11,7 @@ import { shuffleChoices } from "@/lib/shuffle";
 import { recordFirstTry, useProgress } from "@/lib/storage";
 import type { Scenario } from "@/lib/types";
 import { ConsoleFrame, LeaveLink, MobileBrief, type FlagEntry } from "@/components/console/ConsoleFrame";
+import { HighlightedBody } from "@/components/HighlightedText";
 import { ReportStrip } from "@/components/ReportStrip";
 
 function money(value: number): string {
@@ -54,6 +55,7 @@ function RoomPlay({ room, scenario }: { room: Room; scenario: Scenario }) {
   const [draft, setDraft] = useState("");
   const [typingOpen, setTypingOpen] = useState(false);
   const [answered, setAnswered] = useState(false);
+  const scroller = useRef<HTMLDivElement>(null);
 
   const option = room.options.find((item) => item.id === picked) ?? null;
   const follow = option?.follow ?? [];
@@ -108,6 +110,12 @@ function RoomPlay({ room, scenario }: { room: Room; scenario: Scenario }) {
     }, wait);
     return () => window.clearTimeout(timer);
   }, [phase, playingSite, followShown, siteDone, picked, reduce, room.options]);
+
+  useEffect(() => {
+    const node = scroller.current;
+    if (!node) return;
+    node.scrollTo({ top: node.scrollHeight, behavior: reduce ? "auto" : "smooth" });
+  }, [shown, trail.length, phase, playingSite, reduce]);
 
   useEffect(() => {
     if (phase === "debrief" || reduce) return;
@@ -197,12 +205,12 @@ function RoomPlay({ room, scenario }: { room: Room; scenario: Scenario }) {
               <p className="text-[15px] font-medium">{room.contact}</p>
               <p className="mono text-[12px] text-muted">{room.detail}</p>
             </div>
-            <p className="mono text-[12px] text-muted">{money(balance)}</p>
+            <p className={`mono text-[12px] ${hit ? "text-miss" : "text-muted"}`}>{money(balance)}</p>
           </header>
           <div className="pressure">
             <span style={{ width: `${(seconds / 45) * 100}%` }} />
           </div>
-          <div className="flex-1 space-y-2 overflow-y-auto px-3 py-3">
+          <div ref={scroller} className="flex-1 space-y-2 overflow-y-auto px-3 py-3">
             {room.history?.map((line) => (
               <p
                 key={line.text}
@@ -215,9 +223,7 @@ function RoomPlay({ room, scenario }: { room: Room; scenario: Scenario }) {
             {visibleIncoming.map((line, index) => (
               <Message key={`in-${index}`} line={line} />
             ))}
-            {phase === "incoming" && shown < room.incoming.length ? (
-              <p className="text-[13px] text-muted">Typing</p>
-            ) : null}
+            {phase === "incoming" && shown < room.incoming.length ? <Typing /> : null}
             {trail.map((event, index) => (
               <FollowView key={`f-${index}`} event={event} />
             ))}
@@ -263,7 +269,16 @@ function RoomPlay({ room, scenario }: { room: Room; scenario: Scenario }) {
                 </form>
               </div>
             ) : null}
-            {phase === "debrief" ? <Debrief room={room} scenario={scenario} correct={option?.correct ?? false} nextId={nextId} already={Boolean(progress.results[room.id] && !answered)} /> : null}
+            {phase === "debrief" ? (
+              <Debrief
+                room={room}
+                scenario={scenario}
+                correct={option?.correct ?? false}
+                nextId={nextId}
+                already={Boolean(progress.results[room.id] && !answered)}
+                lines={[...visibleIncoming.map((line) => line.text), ...trail.flatMap((event) => (event.kind === "chat" || event.kind === "sms" ? [event.text] : []))]}
+              />
+            ) : null}
             {phase === "follow" && !playingSite ? (
               <p className="text-[13px] text-muted">Watch what happens next.</p>
             ) : null}
@@ -274,18 +289,51 @@ function RoomPlay({ room, scenario }: { room: Room; scenario: Scenario }) {
   );
 }
 
+function Typing() {
+  return (
+    <p className="bubble bubble-them w-16 text-[13px] tracking-[0.3em] text-muted" aria-label="Typing">
+      ...
+    </p>
+  );
+}
+
+function Arrive({ children }: { children: React.ReactNode }) {
+  const reduce = useReducedMotion();
+  return (
+    <motion.div
+      initial={reduce ? false : { opacity: 0, y: 6 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: reduce ? 0 : 0.2, ease: [0.2, 0, 0, 1] }}
+    >
+      {children}
+    </motion.div>
+  );
+}
+
 function Message({ line }: { line: Incoming }) {
   if (line.kind === "sms") {
     return (
-      <div className="border border-line bg-card px-3 py-3">
-        <p className="text-[11px] tracking-wide text-muted uppercase">Text message</p>
-        <p className="mt-1 text-[13px]">{line.sender}</p>
-        <p className="mt-2 text-[15px] leading-relaxed">{line.text}</p>
-      </div>
+      <Arrive>
+        <div className="border border-line bg-card px-3 py-3">
+          <p className="text-[11px] tracking-wide text-muted uppercase">New text</p>
+          <p className="mt-1 text-[13px]">{line.sender}</p>
+          <p className="mt-2 text-[15px] leading-relaxed">{line.text}</p>
+        </div>
+      </Arrive>
     );
   }
-  if (line.from === "note") return <p className="bubble bubble-system">{line.text}</p>;
-  return <p className={`bubble ${line.from === "you" ? "bubble-you" : "bubble-them"}`}>{line.text}</p>;
+  if (line.from === "note") {
+    return (
+      <Arrive>
+        <p className="bubble bubble-system">{line.text}</p>
+      </Arrive>
+    );
+  }
+  return (
+    <Arrive>
+      <p className={`bubble ${line.from === "you" ? "bubble-you" : "bubble-them"}`}>{line.text}</p>
+    </Arrive>
+  );
 }
 
 function FollowView({ event }: { event: Follow }) {
@@ -334,23 +382,41 @@ function SiteCard({
   );
 }
 
+function ReplayLine({ text }: { text: string }) {
+  const report = scanFlags(text);
+  if (report.matches.length === 0) return text;
+  return <HighlightedBody text={text} report={report} />;
+}
+
 function Debrief({
   room,
   scenario,
   correct,
   nextId,
   already,
+  lines,
 }: {
   room: Room;
   scenario: Scenario;
   correct: boolean;
   nextId: string | null;
   already: boolean;
+  lines: string[];
 }) {
   return (
     <div className="grid gap-3">
       <p className="text-[13px] tracking-wide text-muted uppercase">{correct ? "Objective met" : "Objective missed"}</p>
       <p className="lesson">{scenario.lesson}</p>
+      {lines.length > 0 ? (
+        <div className="grid gap-2">
+          <p className="text-[12px] tracking-wide text-muted uppercase">Replay</p>
+          {lines.map((line, index) => (
+            <div key={`${index}-${line.slice(0, 24)}`} className="border-l border-line pl-3 text-[14px] leading-relaxed">
+              <ReplayLine text={line} />
+            </div>
+          ))}
+        </div>
+      ) : null}
       {already ? <p className="text-[13px] text-muted">Your first answer is the one on the record.</p> : null}
       {room.reveal ? (
         <div className="border border-line px-3 py-3">

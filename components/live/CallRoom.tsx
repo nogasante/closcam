@@ -33,6 +33,7 @@ export function CallRoom() {
   const [ended, setEnded] = useState<"win" | "loss" | null>(null);
   const [listening, setListening] = useState(false);
   const [seconds, setSeconds] = useState(45);
+  const [waiting, setWaiting] = useState(false);
 
   useEffect(() => {
     if (!ringing) {
@@ -69,12 +70,15 @@ export function CallRoom() {
     const history = [...turns, { role: "user" as const, text: shown }];
     setTurns(history);
     setDraft("");
+    setWaiting(true);
     if (verdict === "win") {
+      setWaiting(false);
       recordCall(true);
       setEnded("win");
       return;
     }
     if (verdict === "loss") {
+      setWaiting(false);
       recordCall(false);
       setEnded("loss");
       return;
@@ -99,14 +103,19 @@ export function CallRoom() {
       from = "script";
     }
     setSource(from);
+    setWaiting(false);
     blip();
     setTurns((current) => [...current, { role: "scammer", text: line }]);
-    if (!reduce && window.speechSynthesis && window.localStorage.getItem("closcam-sound") !== "off") {
-      window.speechSynthesis.cancel();
-      const utterance = new SpeechSynthesisUtterance(line);
-      utterance.rate = 1;
-      window.speechSynthesis.speak(utterance);
-    }
+    speak(line, reduce);
+  }
+
+  function speak(line: string, quiet: boolean | null) {
+    if (quiet || !window.speechSynthesis) return;
+    if (window.localStorage.getItem("closcam-sound") === "off") return;
+    window.speechSynthesis.cancel();
+    const utterance = new SpeechSynthesisUtterance(line);
+    utterance.rate = 1;
+    window.speechSynthesis.speak(utterance);
   }
 
   function listen() {
@@ -180,19 +189,26 @@ export function CallRoom() {
                   {PERSONAS.find((item) => item.id === persona)?.label}
                 </p>
                 <p className="mono mt-2 text-[13px] text-muted">+233 24 550 0193</p>
-                <button
-                  type="button"
-                  className="btn btn-primary mt-6"
-                  onClick={() => {
-                    stopRing();
-                    setRinging(false);
-                    setActive(true);
-                    setTurns([{ role: "scammer", text: scriptedLine(persona, []) }]);
-                    setSource("script");
-                  }}
-                >
-                  Answer
-                </button>
+                <div className="mt-6 grid gap-2">
+                  <button
+                    type="button"
+                    className="btn btn-primary"
+                    onClick={() => {
+                      stopRing();
+                      setRinging(false);
+                      setActive(true);
+                      const opening = scriptedLine(persona, []);
+                      setTurns([{ role: "scammer", text: opening }]);
+                      setSource("script");
+                      speak(opening, reduce);
+                    }}
+                  >
+                    Answer
+                  </button>
+                  <button type="button" className="btn btn-secondary" onClick={hangUp}>
+                    Decline
+                  </button>
+                </div>
               </div>
             ) : null}
             {active || ended ? (
@@ -208,6 +224,7 @@ export function CallRoom() {
                     {turn.text}
                   </p>
                 ))}
+                {waiting ? <p className="text-[13px] text-muted">They are talking.</p> : null}
               </div>
             ) : null}
             {ended ? (

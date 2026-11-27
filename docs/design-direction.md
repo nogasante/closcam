@@ -19,7 +19,7 @@ CloScam should feel like a serious training product, the way a good operations t
 2. One type system. IBM Plex Sans for the interface, IBM Plex Serif for the lesson sentence only, IBM Plex Mono for amounts, numbers, and fake domains. All three are SIL Open Font License 1.1.
 3. An 8 pixel grid. Spacing steps are 8, 16, 24, 32, 48. Corners on UI are 6 or 8 pixels. The phone bezel is the only large radius, because it is hardware.
 4. Motion is a change of state. 160 to 240 milliseconds, cubic-bezier(0.2, 0, 0, 1). Messages move 6 pixels, not a bounce. `prefers-reduced-motion` removes the delay and the transform.
-5. 3D is the junction you stand at: a phone, a PulsePay stall, and a call booth. Fixed camera. No orbit showcase, no floating labels, no stock model pack. A flat elevation of the same three objects is the low-graphics view, and it is a real view, not an error state.
+5. 3D is the junction you stand at: a phone on a plinth, a stall with a counter and a sign, and a booth with a back wall and a handset. One lamp explains the amber. Fixed camera, no orbit showcase, no floating labels, no downloaded model pack. The geometry is original. A flat elevation of the same three objects is the low-graphics view, and it is a real view, not an error state.
 6. The room is the phone. Progress is the thread still on screen, then the notes under it. We do not flip to a new page to tell you what happened.
 7. Copy is specific. Ranks are New, Spotter, Careful, Sharp, Closer. No slogans about potential, empowerment, or unlocking.
 
