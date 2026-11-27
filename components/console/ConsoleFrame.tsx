@@ -17,6 +17,7 @@ export function ConsoleFrame({
   progress,
   action,
   children,
+  phoneMode = false,
 }: {
   kicker: string;
   title: string;
@@ -28,51 +29,35 @@ export function ConsoleFrame({
   progress: string;
   action?: React.ReactNode;
   children: React.ReactNode;
+  phoneMode?: boolean;
 }) {
   const panel = (
-    <div className="grid gap-6">
-      <section>
-        <p className="text-[12px] tracking-wide text-muted uppercase">{kicker}</p>
-        <h1 className="mt-1 text-[22px] leading-tight font-medium tracking-tight">{title}</h1>
-        <p className="mt-3 text-[15px] leading-relaxed text-muted">{brief}</p>
-      </section>
-      <section>
-        <h2 className="text-[12px] tracking-wide text-muted uppercase">Objective</h2>
-        <p className="mt-2 text-[15px]">{objective}</p>
-      </section>
-      <section>
-        <div className="flex items-baseline justify-between gap-3">
-          <h2 className="text-[12px] tracking-wide text-muted uppercase">Pressure</h2>
-          <p className="mono text-[12px] text-muted">{pressureLabel}</p>
-        </div>
-        <div className="pressure mt-2" aria-hidden="true">
+    <div className="grid gap-8">
+      <div>
+        <p className="text-sm text-muted">{kicker}</p>
+        <h1 className="mt-1 text-[28px] leading-tight font-extrabold">{title}</h1>
+        <p className="mt-4 text-[16px] leading-relaxed text-muted">{brief}</p>
+        <p className="mt-4 text-[16px]">{objective}</p>
+        <div className="pressure mt-6" aria-label={pressureLabel}>
           <span style={{ width: `${Math.max(0, Math.min(100, pressureLeft))}%` }} />
         </div>
-      </section>
-      <section>
-        <h2 className="text-[12px] tracking-wide text-muted uppercase">Red-flag log</h2>
-        {flags.length === 0 ? (
-          <p className="mt-2 text-[14px] text-muted">Nothing logged yet.</p>
-        ) : (
-          <ol className="mt-2 grid gap-2">
-            {flags.map((flag, index) => (
-              <li key={`${flag.label}-${index}`} className="border-l border-danger py-1 pl-3 text-[14px]">
-                <span className="font-medium">{flag.label}.</span> {flag.detail}
-              </li>
-            ))}
-          </ol>
-        )}
-      </section>
-      <section>
-        <h2 className="text-[12px] tracking-wide text-muted uppercase">Progress</h2>
-        <p className="mt-2 text-[14px]">{progress}</p>
-      </section>
+      </div>
+      {flags.length > 0 ? (
+        <ul className="grid gap-3">
+          {flags.map((flag, index) => (
+            <li key={`${flag.label}-${index}`} className="text-sm text-muted">
+              {flag.detail}
+            </li>
+          ))}
+        </ul>
+      ) : null}
+      <p className="text-sm text-muted">{progress}</p>
     </div>
   );
 
   return (
     <div className="flex min-h-dvh flex-col">
-      <div className="sticky top-0 z-30 bg-paper">
+      <div className={phoneMode ? "hidden" : "nav-frost"}>
         <SiteHeader action={action} />
         <SimulationBanner />
       </div>

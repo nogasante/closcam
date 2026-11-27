@@ -10,11 +10,11 @@ import { nextScenarioId } from "@/lib/scenarios";
 import { shuffleChoices } from "@/lib/shuffle";
 import { recordFirstTry, useProgress } from "@/lib/storage";
 import type { Scenario } from "@/lib/types";
-import { ConsoleFrame, LeaveLink, MobileBrief, type FlagEntry } from "@/components/console/ConsoleFrame";
+import { ConsoleFrame, LeaveLink, type FlagEntry } from "@/components/console/ConsoleFrame";
 import { HighlightedBody } from "@/components/HighlightedText";
 import { ReportStrip } from "@/components/ReportStrip";
 import { StatusBar } from "@/components/phone/StatusBar";
-import { CheckCheck } from "lucide-react";
+import { CheckCheck, ChevronLeft, Info, Phone, Video } from "lucide-react";
 
 function money(value: number): string {
   return `GHS ${value.toFixed(2)}`;
@@ -55,8 +55,9 @@ function RoomPlay({ room, scenario }: { room: Room; scenario: Scenario }) {
   const [hit, setHit] = useState(false);
   const [seconds, setSeconds] = useState(45);
   const [draft, setDraft] = useState("");
-  const [typingOpen, setTypingOpen] = useState(false);
   const [answered, setAnswered] = useState(false);
+  const [infoOpen, setInfoOpen] = useState(false);
+  const [smsOpen, setSmsOpen] = useState(false);
   const scroller = useRef<HTMLDivElement>(null);
 
   const option = room.options.find((item) => item.id === picked) ?? null;
@@ -137,6 +138,7 @@ function RoomPlay({ room, scenario }: { room: Room; scenario: Scenario }) {
   );
 
   const visibleIncoming = room.incoming.slice(0, shown);
+  const bannerSms = [...visibleIncoming, ...trail].reverse().find((item) => item.kind === "sms");
   const visibleFollow = trail.filter((event) => event.kind !== "balance");
   const flags = collect([
     ...visibleIncoming.map((line) => ({ text: line.text, log: line.log })),
@@ -184,9 +186,11 @@ function RoomPlay({ room, scenario }: { room: Room; scenario: Scenario }) {
   }
 
   const nextId = nextScenarioId(room.id);
+  const immersive = room.surface === "chat" || room.surface === "sms";
 
   return (
     <ConsoleFrame
+      phoneMode={immersive}
       kicker={`Room ${scenario.number} of 10`}
       title={scenario.title}
       brief={room.brief}
@@ -197,23 +201,54 @@ function RoomPlay({ room, scenario }: { room: Room; scenario: Scenario }) {
       progress={`${cleared} of 10 rooms have a first answer. This room ${progress.results[room.id] ? "is recorded" : "is open"}.`}
       action={<LeaveLink />}
     >
-      <div className="lg:hidden">
-        <MobileBrief objective={room.objective} flags={flags} />
-      </div>
-      <div className={`device flex min-h-[calc(100dvh-132px)] flex-col ${hit ? "ring-2 ring-danger" : ""}`}>
-        <div className="device-screen chat-wall min-h-0 flex-1">
+      <div className={`device flex flex-col ${immersive ? "min-h-dvh lg:min-h-[680px]" : "min-h-[calc(100dvh-132px)]"} ${hit ? "ring-2 ring-danger" : ""}`}>
+        <div className="device-screen chat-wall relative min-h-0 flex-1">
           <StatusBar />
-          <header className="flex items-center justify-between gap-3 border-b border-white/10 bg-black/25 px-3 py-2">
-            <div>
-              <p className="text-[15px] font-medium">{room.contact}</p>
-              <p className="mono text-[12px] text-muted">{room.detail}</p>
-            </div>
-            <p className={`mono text-[12px] ${hit ? "text-miss" : "text-muted"}`}>{money(balance)}</p>
+          <p className="pointer-events-none absolute top-1 left-1/2 z-20 -translate-x-1/2 rounded-full bg-black/45 px-2 py-0.5 text-[10px] font-semibold tracking-wide text-white/80">
+            Simulation
+          </p>
+          {bannerSms && bannerSms.kind === "sms" && !smsOpen ? (
+            <motion.button
+              type="button"
+              key={bannerSms.text}
+              initial={reduce ? false : { y: -72, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ type: "spring", stiffness: 420, damping: 32 }}
+              className="absolute top-9 right-2 left-2 z-30 flex gap-3 rounded-2xl bg-[#1c1c1e]/95 px-3 py-2 text-left text-white shadow-xl"
+              onClick={() => setSmsOpen(true)}
+            >
+              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[#3ddc84] text-[11px] font-extrabold text-[#062216]">
+                Msg
+              </span>
+              <span>
+                <span className="block text-[13px] font-bold">{bannerSms.sender}</span>
+                <span className="mt-0.5 block text-[13px] leading-snug text-white/85">{bannerSms.text}</span>
+              </span>
+            </motion.button>
+          ) : null}
+          <header className="flex items-center gap-1 bg-[#1f2c34] px-1 py-1.5 text-white">
+            <Link href="/hub" className="inline-flex h-11 w-10 items-center justify-center" aria-label="Back to rooms">
+              <ChevronLeft size={26} />
+            </Link>
+            <span className="flex h-9 w-9 items-center justify-center rounded-full bg-[#6b4f3a] text-sm font-extrabold">
+              {room.contact.slice(0, 1)}
+            </span>
+            <span className="min-w-0 flex-1 text-left">
+              <span className="block truncate text-[16px] leading-tight font-semibold">{room.contact}</span>
+              <span className="block text-[12px] text-white/70">online</span>
+            </span>
+            <button type="button" className="inline-flex h-11 w-10 items-center justify-center" aria-label="Video" onClick={() => setInfoOpen(true)}>
+              <Video size={20} />
+            </button>
+            <button type="button" className="inline-flex h-11 w-10 items-center justify-center" aria-label="Call" onClick={() => setInfoOpen(true)}>
+              <Phone size={18} />
+            </button>
+            <button type="button" className="inline-flex h-11 w-10 items-center justify-center" aria-label="Room info" onClick={() => setInfoOpen(true)}>
+              <Info size={18} />
+            </button>
           </header>
-          <div className="pressure">
-            <span style={{ width: `${(seconds / 45) * 100}%` }} />
-          </div>
           <div ref={scroller} className="flex-1 space-y-2 overflow-y-auto px-3 py-3">
+            <p className="mx-auto w-fit rounded-lg bg-[#182229]/90 px-2 py-1 text-[11px] text-white/80">Today</p>
             {room.history?.map((line) => (
               <p
                 key={line.text}
@@ -242,22 +277,54 @@ function RoomPlay({ room, scenario }: { room: Room; scenario: Scenario }) {
               />
             ) : null}
           </div>
-          <div className="shrink-0 border-t border-line px-3 py-3">
+          {infoOpen ? (
+            <div className="absolute inset-0 z-40 flex items-start justify-center bg-black/50 p-3" onClick={() => setInfoOpen(false)}>
+              <div className="mt-10 w-full rounded-2xl bg-[#1f2c34] p-4 text-white" onClick={(event) => event.stopPropagation()}>
+                <p className="text-xs font-bold tracking-wide text-white/60 uppercase">Room info</p>
+                <p className="mt-2 text-[15px]">{room.objective}</p>
+                <p className={`mono mt-3 inline-flex rounded-full bg-black/30 px-3 py-1 text-[12px] ${hit ? "text-miss" : ""}`}>
+                  Training balance {money(balance)}
+                </p>
+                <p className="mt-3 text-sm text-white/70">
+                  {flags.length} flag{flags.length === 1 ? "" : "s"} logged.
+                  {flags[0] ? ` ${flags[flags.length - 1]?.label}.` : ""}
+                </p>
+                <button type="button" className="btn btn-secondary mt-4" onClick={() => setInfoOpen(false)}>
+                  Close
+                </button>
+              </div>
+            </div>
+          ) : null}
+          {smsOpen && bannerSms && bannerSms.kind === "sms" ? (
+            <div className="absolute inset-0 z-40 flex flex-col bg-[#111] text-white">
+              <header className="flex items-center gap-2 bg-[#1b1b1b] px-2 py-2">
+                <button type="button" className="inline-flex h-11 w-11 items-center justify-center" onClick={() => setSmsOpen(false)} aria-label="Back to chat">
+                  <ChevronLeft />
+                </button>
+                <span className="font-semibold">Messages</span>
+              </header>
+              <div className="px-4 py-6">
+                <p className="text-xs text-white/50">{bannerSms.sender}</p>
+                <p className="mt-2 max-w-[90%] rounded-2xl rounded-tl-sm bg-[#2c2c2e] px-3 py-2 text-[16px] leading-relaxed">
+                  {bannerSms.text}
+                </p>
+              </div>
+            </div>
+          ) : null}
+          <div className="shrink-0 bg-[#1f2c34] px-2 py-2">
             {phase === "choose" ? (
-              <div className="grid gap-2">
+              <motion.div
+                className="grid max-h-[42dvh] gap-2 overflow-y-auto"
+                initial={reduce ? false : { y: 24, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ type: "spring", stiffness: 420, damping: 34 }}
+              >
                 {ordered.map((item) => (
-                  <button key={item.id} type="button" className="btn btn-choice" onClick={() => choose(item.id)}>
+                  <button key={item.id} type="button" className="min-h-12 rounded-2xl bg-[#2a3942] px-3 py-2 text-left text-[15px] text-white" onClick={() => choose(item.id)}>
                     {item.text}
                   </button>
                 ))}
-                <button
-                  type="button"
-                  className="min-h-11 text-left text-[13px] text-muted lg:hidden"
-                  onClick={() => setTypingOpen((open) => !open)}
-                >
-                  {typingOpen ? "Hide the reply box" : "Type what you would say"}
-                </button>
-                <form onSubmit={onDraft} className={`gap-2 ${typingOpen ? "grid" : "hidden lg:grid"}`}>
+                <form onSubmit={onDraft} className="grid gap-2">
                   <label className="sr-only" htmlFor="reply">
                     What you would reply
                   </label>
@@ -270,7 +337,7 @@ function RoomPlay({ room, scenario }: { room: Room; scenario: Scenario }) {
                     className="min-h-12 w-full border border-line bg-paper px-3 text-[16px]"
                   />
                 </form>
-              </div>
+              </motion.div>
             ) : null}
             {phase === "debrief" ? (
               <Debrief
@@ -314,17 +381,7 @@ function Arrive({ children }: { children: React.ReactNode }) {
 }
 
 function Message({ line }: { line: Incoming }) {
-  if (line.kind === "sms") {
-    return (
-      <Arrive>
-        <div className="border border-line bg-card px-3 py-3">
-          <p className="text-[11px] tracking-wide text-muted uppercase">New text</p>
-          <p className="mt-1 text-[13px]">{line.sender}</p>
-          <p className="mt-2 text-[15px] leading-relaxed">{line.text}</p>
-        </div>
-      </Arrive>
-    );
-  }
+  if (line.kind === "sms") return null;
   if (line.from === "note") {
     return (
       <Arrive>
@@ -350,14 +407,7 @@ function FollowView({ event }: { event: Follow }) {
     return <p className="bubble bubble-system">{event.label}</p>;
   }
   if (event.kind === "site") return null;
-  if (event.kind === "sms") {
-    return (
-      <div className="border border-line px-3 py-3">
-        <p className="text-[11px] tracking-wide text-muted uppercase">Text</p>
-        <p className="mt-2">{event.text}</p>
-      </div>
-    );
-  }
+  if (event.kind === "sms") return null;
   if (event.from === "note") return <p className="bubble bubble-system">{event.text}</p>;
   return <p className={`bubble ${event.from === "you" ? "bubble-you" : "bubble-them"}`}>{event.text}</p>;
 }

@@ -2,12 +2,12 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useSyncExternalStore } from "react";
 import { Flame, Star } from "lucide-react";
 import type { DrillSummary } from "@/lib/scenarios";
-import { surfaceLabel } from "@/lib/scenarios";
 import { useConsent, useExtras, useMounted, useProgress } from "@/lib/storage";
 import { PageShell } from "@/components/PageShell";
+import { SiteFooter } from "@/components/SiteHeader";
 import { RoomArt } from "@/components/phone/RoomArt";
 
 const RANKS = [
@@ -60,6 +60,7 @@ export function TrainingHub({ drills }: { drills: DrillSummary[] }) {
         </p>
       }
     >
+      <RankToast rank={rank} xp={xp} mounted={mounted} />
       <div className="lift px-4 py-4 sm:px-5">
         <p className="text-xs font-bold tracking-wide text-green uppercase">Mission map</p>
         <div className="mt-1 flex flex-wrap items-end justify-between gap-3">
@@ -83,17 +84,13 @@ export function TrainingHub({ drills }: { drills: DrillSummary[] }) {
           const done = progress.results[drill.id];
           return (
             <li key={drill.id}>
-              <Link href={`/drills/${drill.id}`} className="lift block overflow-hidden">
-                <RoomArt kind={drill.surfaces.join(" ")} />
-                <div className="px-4 py-3">
-                  <div className="flex items-center justify-between gap-2 text-xs font-bold text-muted uppercase">
-                    <span>
-                      {String(drill.number).padStart(2, "0")} · {drill.surfaces.map((item) => surfaceLabel(item)).join(" · ")}
-                    </span>
-                    <span>{done ? (done.correct ? "Met" : "Missed") : drill.difficulty}</span>
-                  </div>
-                  <p className="mt-1 text-lg font-extrabold">{drill.title}</p>
-                  {drill.headline ? <p className="text-sm font-bold text-green">Start here</p> : null}
+              <Link href={`/drills/${drill.id}`} className="room-card lift block overflow-hidden">
+                <RoomArt id={drill.id} />
+                <div className="flex items-baseline justify-between gap-3 px-4 py-3">
+                  <p className="text-lg font-extrabold">{drill.title}</p>
+                  <p className="shrink-0 text-sm text-muted">
+                    {done ? (done.correct ? "Met" : "Missed") : drill.headline ? "Start" : drill.difficulty}
+                  </p>
                 </div>
               </Link>
             </li>
@@ -104,11 +101,46 @@ export function TrainingHub({ drills }: { drills: DrillSummary[] }) {
         <Link href="/call" className="btn btn-primary">
           Live call
         </Link>
-        <Link href="/protect" className="btn btn-secondary">
+        <Link href="/protect" className="text-sm text-muted">
           Protection
         </Link>
       </div>
+      <SiteFooter />
     </PageShell>
+  );
+}
+
+function RankToast({ rank, xp, mounted }: { rank: string; xp: number; mounted: boolean }) {
+  const message = useSyncExternalStore(
+    (onStoreChange) => {
+      window.addEventListener("closcam-progress", onStoreChange);
+      return () => window.removeEventListener("closcam-progress", onStoreChange);
+    },
+    () => {
+      if (!mounted) return "";
+      const seen = window.sessionStorage.getItem("closcam-seen-rank") ?? "";
+      if (seen && seen !== rank && xp > 0) return rank;
+      return "";
+    },
+    () => "",
+  );
+  useEffect(() => {
+    if (!mounted) return;
+    if (!message) {
+      window.sessionStorage.setItem("closcam-seen-rank", rank);
+      return;
+    }
+    const timer = window.setTimeout(() => {
+      window.sessionStorage.setItem("closcam-seen-rank", rank);
+      window.dispatchEvent(new Event("closcam-progress"));
+    }, 2600);
+    return () => window.clearTimeout(timer);
+  }, [message, mounted, rank]);
+  if (!message) return null;
+  return (
+    <p className="mb-4 rounded-xl bg-green px-4 py-3 text-sm font-extrabold text-[#1a1408]">
+      New rank: {message}
+    </p>
   );
 }
 
