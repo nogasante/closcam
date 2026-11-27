@@ -38,6 +38,10 @@ export function Landing() {
       <header className="nav-frost">
         <div className="mx-auto flex w-full max-w-6xl items-center justify-between px-4 py-3 lg:px-8">
           <p className="display text-[17px] font-extrabold">CloScam</p>
+          <div className="flex items-center gap-4">
+          <Link href="/check" className="hidden min-h-11 items-center text-sm font-semibold lg:inline-flex">
+            Check
+          </Link>
           <Link
             href={start}
             className={`nav-cta btn btn-primary ${navCta ? "is-on" : ""}`}
@@ -46,6 +50,7 @@ export function Landing() {
           >
             Start training
           </Link>
+          </div>
         </div>
       </header>
       <section className="mx-auto grid w-full max-w-6xl items-center gap-10 px-4 pt-10 lg:grid-cols-[1fr_1.05fr] lg:gap-8 lg:px-8 lg:pt-16">

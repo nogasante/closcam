@@ -7,7 +7,12 @@ export function SiteHeader({ action }: { action?: React.ReactNode }) {
         <Link href="/" className="display text-[17px] font-extrabold tracking-tight">
           CloScam
         </Link>
-        {action}
+        <div className="flex items-center gap-4">
+          <Link href="/check" className="hidden min-h-11 items-center text-sm font-semibold lg:inline-flex">
+            Check
+          </Link>
+          {action}
+        </div>
       </div>
     </header>
   );
@@ -18,7 +23,12 @@ export function SiteFooter() {
     <footer className="mx-auto w-full max-w-6xl px-4 py-12 text-sm text-[#d5dbe4] lg:px-8">
       <div className="flex items-center justify-between">
         <p>CloScam</p>
-        <p>292 · 18555</p>
+        <p className="flex gap-4">
+          <Link href="/check" className="underline">
+            Scam checker
+          </Link>
+          <span>292 · 18555</span>
+        </p>
       </div>
       <p className="mt-3 max-w-xl text-xs leading-relaxed">
         <a className="underline" href="https://community.spline.design/file/5209eac0-5eb0-4577-9f00-402a1561c0cf">

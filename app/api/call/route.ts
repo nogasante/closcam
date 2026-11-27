@@ -1,9 +1,8 @@
 import { generateText } from "ai";
 import { redact, scriptedLine, type Persona, type Turn } from "@/lib/call/engine";
+import { gatewayModel, geminiLanguageModel } from "@/lib/server/gemini";
 
 export const runtime = "nodejs";
-
-const MODEL = process.env.AI_GATEWAY_MODEL ?? "google/gemini-2.5-flash";
 
 const SYSTEM = `You are inside CloScam, a training simulation. You play one fictional caller. You are not a real company and you are not a real person.
 
@@ -45,15 +44,16 @@ export async function POST(request: Request) {
   }
 
   const fallback = scriptedLine(persona, history);
-  const ready = Boolean(process.env.AI_GATEWAY_API_KEY || process.env.VERCEL_OIDC_TOKEN);
-  if (!ready) {
+  const google = geminiLanguageModel();
+  const model = google ?? gatewayModel();
+  if (!model) {
     return Response.json({ line: fallback, source: "script" });
   }
 
   try {
     const transcript = history.map((turn) => `${turn.role}: ${turn.text}`).join("\n");
     const { text } = await generateText({
-      model: MODEL,
+      model,
       system: SYSTEM,
       prompt: `Persona: ${persona}.\n\n${transcript || "(call just connected)"}\n\nNext line.`,
       maxOutputTokens: 80,

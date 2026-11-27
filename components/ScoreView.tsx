@@ -91,6 +91,9 @@ export function ScoreView({ total }: { total: number }) {
           <Link href="/hub" className="inline-flex min-h-11 items-center text-muted">
             Mission map
           </Link>
+          <Link href="/check" className="inline-flex min-h-11 items-center text-muted">
+            Check a message
+          </Link>
         </p>
       </div>
       <div className="mt-6">

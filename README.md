@@ -39,10 +39,10 @@ Nothing in the app sends an SMS, a chat, a call, or a payment. Do not type a rea
 1. Import this GitHub repository in the Vercel dashboard, or run the Vercel CLI from the repository root.
 2. Framework preset: Next.js. Root directory: the repository root.
 3. Build command: `npm run build`. Output: the Next.js default.
-4. Leave environment variables empty. Do not add an analytics product that identifies people.
-5. Deploy. The app is static pages plus client-side progress stored in the browser.
+4. Optional, server only: set `closcam_gemini_api` (the name used on Vercel Preview and Production) or `GEMINI_API_KEY`. Either one turns on Gemini for `/api/call` and `/api/check`. If neither is set, those routes use the Vercel AI Gateway when its own credentials are present, then a local script or rules check. Do not commit a value. The app never sends the key to the browser and does not log it. Do not add an analytics product that identifies people.
+5. Deploy. Progress stays in the browser. The two API routes above are the only server calls.
 
-No backend, database, or server secret is used.
+See `.env.example` for the variable names.
 
 ## Tools used
 
@@ -53,7 +53,8 @@ No backend, database, or server secret is used.
 - Lucide icons, ISC
 - Nunito and Source Sans 3, SIL Open Font License 1.1, via Fontsource
 - IBM Plex Mono, SIL Open Font License 1.1, via Fontsource, for amounts and numbers
-- Vercel AI SDK, Apache-2.0, for the optional live-call line
+- Vercel AI SDK, Apache-2.0, and `@ai-sdk/google`, for the optional live-call line and the scam checker
+- Community number and site lists, such as Osebow, are not scraped. `lib/check/lists.ts` is an empty adapter until a documented API and permission exist.
 - ESLint 9, with eslint-config-next
 - Node.js
 - Vercel, for the public deploy
