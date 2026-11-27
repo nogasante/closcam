@@ -1,6 +1,7 @@
 import { createHash } from "crypto";
 import fs from "fs";
 import path from "path";
+import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import type { SubjectType } from "./normalize";
 
 export type FlagStatus = "flagged" | "reported_unverified" | "clean_unknown";
@@ -61,29 +62,13 @@ function saveLocal(db: Db) {
   }
 }
 
-function configured(): { url: string; key: string } | null {
+function remote(): SupabaseClient | null {
   const url = process.env.SUPABASE_URL?.trim();
-  const key = process.env.SUPABASE_SERVICE_ROLE_KEY?.trim();
+  const key = process.env.SUPABASE_PUBLISHABLE_KEY?.trim();
   if (!url || !key) return null;
-  return { url: url.replace(/\/$/, ""), key };
-}
-
-async function rest(pathAndQuery: string, init?: RequestInit): Promise<Response | null> {
-  const remote = configured();
-  if (!remote) return null;
-  try {
-    return await fetch(`${remote.url}/rest/v1/${pathAndQuery}`, {
-      ...init,
-      headers: {
-        apikey: remote.key,
-        authorization: `Bearer ${remote.key}`,
-        "content-type": "application/json",
-        ...(init?.headers ?? {}),
-      },
-    });
-  } catch {
-    return null;
-  }
+  return createClient(url, key, {
+    auth: { persistSession: false, autoRefreshToken: false },
+  });
 }
 
 export function reporterHash(ip: string): string {
@@ -92,60 +77,66 @@ export function reporterHash(ip: string): string {
 }
 
 export async function addReport(input: NewReport): Promise<void> {
-  const remote = await rest("community_reports", {
-    method: "POST",
-    headers: { prefer: "return=minimal" },
-    body: JSON.stringify({
-      subject_type: input.type,
-      subject_key: input.key,
-      scam_type: input.scamType,
-      description: input.description,
-      has_evidence: input.hasEvidence,
-      reporter_hash: input.reporterHash,
-    }),
-  });
-  if (remote?.ok) return;
-  const db = loadLocal();
-  db.reports.push({ ...input, at: new Date().toISOString() });
-  saveLocal(db);
+  const db = remote();
+  if (db) {
+    const { error } = await db.rpc("submit_report", {
+      p_subject_type: input.type,
+      p_subject_key: input.key,
+      p_scam_type: input.scamType,
+      p_description: input.description,
+      p_has_evidence: input.hasEvidence,
+      p_reporter_hash: input.reporterHash,
+    });
+    if (error) throw new Error("Report was not stored.");
+    return;
+  }
+  const local = loadLocal();
+  if (!local.reports.some((row) => row.type === input.type && row.key === input.key && row.reporterHash === input.reporterHash)) {
+    local.reports.push({ ...input, at: new Date().toISOString() });
+    saveLocal(local);
+  }
 }
 
-export async function openDispute(type: SubjectType, key: string, note: string): Promise<void> {
-  const remote = await rest("community_disputes", {
-    method: "POST",
-    headers: { prefer: "return=minimal" },
-    body: JSON.stringify({ subject_type: type, subject_key: key, note }),
-  });
-  if (remote?.ok) return;
-  const db = loadLocal();
-  db.disputes.push({ type, key, note, at: new Date().toISOString() });
-  saveLocal(db);
+export async function openDispute(type: SubjectType, key: string, note: string, reporterHashValue: string): Promise<void> {
+  const db = remote();
+  if (db) {
+    const { error } = await db.rpc("submit_dispute", {
+      p_subject_type: type,
+      p_subject_key: key,
+      p_note: note,
+      p_reporter_hash: reporterHashValue,
+    });
+    if (error) throw new Error("Dispute was not stored.");
+    return;
+  }
+  const local = loadLocal();
+  if (!local.disputes.some((row) => row.type === type && row.key === key && row.note === note)) {
+    local.disputes.push({ type, key, note, at: new Date().toISOString() });
+    saveLocal(local);
+  }
 }
 
 export async function lookupSubject(type: SubjectType, key: string): Promise<CommunityLookup> {
-  const remote = await rest(
-    `community_reports?subject_type=eq.${encodeURIComponent(type)}&subject_key=eq.${encodeURIComponent(key)}&select=reporter_hash`,
-  );
-  if (remote?.ok) {
-    const rows = (await remote.json()) as { reporter_hash?: string; scam_type?: string; created_at?: string }[];
-    const count = new Set(rows.map((row) => row.reporter_hash).filter(Boolean)).size;
-    const disputes = await rest(
-      `community_disputes?subject_type=eq.${encodeURIComponent(type)}&subject_key=eq.${encodeURIComponent(key)}&select=id&limit=1`,
-    );
-    const disputeRows = disputes?.ok ? ((await disputes.json()) as unknown[]) : [];
-    const times = rows.map((row) => row.created_at).filter((item): item is string => Boolean(item));
+  const db = remote();
+  if (db) {
+    const { data, error } = await db.rpc("lookup_flag", {
+      p_subject_type: type,
+      p_subject_key: key,
+    });
+    if (error || !data || typeof data !== "object") throw new Error("Lookup failed.");
+    const row = data as CommunityLookup;
     return {
-      status: statusFrom(count),
-      reportCount: count,
-      scamTypes: [...new Set(rows.map((row) => row.scam_type).filter((item): item is string => Boolean(item)))],
-      lastReported: times.sort().at(-1) ?? null,
-      disputeOpen: disputeRows.length > 0,
+      status: row.status,
+      reportCount: row.reportCount,
+      scamTypes: row.scamTypes ?? [],
+      lastReported: row.lastReported,
+      disputeOpen: Boolean(row.disputeOpen),
     };
   }
-  const db = loadLocal();
-  const rows = db.reports.filter((row) => row.type === type && row.key === key);
+  const local = loadLocal();
+  const rows = local.reports.filter((row) => row.type === type && row.key === key);
   const hashes = new Set(rows.map((row) => row.reporterHash));
-  const disputeOpen = db.disputes.some((row) => row.type === type && row.key === key);
+  const disputeOpen = local.disputes.some((row) => row.type === type && row.key === key);
   return {
     status: statusFrom(hashes.size),
     reportCount: hashes.size,
@@ -158,25 +149,25 @@ export async function lookupSubject(type: SubjectType, key: string): Promise<Com
 export async function issueApiKey(label: string): Promise<string> {
   const raw = `closcam_${createHash("sha256").update(`${Date.now()}:${Math.random()}`).digest("hex").slice(0, 32)}`;
   const hash = createHash("sha256").update(raw).digest("hex");
-  const remote = await rest("community_api_keys", {
-    method: "POST",
-    headers: { prefer: "return=minimal" },
-    body: JSON.stringify({ key_hash: hash, label: label.slice(0, 60) }),
-  });
-  if (!remote?.ok) {
-    const db = loadLocal();
-    db.keys.push({ hash, label: label.slice(0, 60), at: new Date().toISOString() });
-    saveLocal(db);
+  const db = remote();
+  if (db) {
+    const { error } = await db.rpc("issue_api_key", { p_key_hash: hash, p_label: label.slice(0, 60) });
+    if (error) throw new Error("Key was not stored.");
+    return raw;
   }
+  const local = loadLocal();
+  local.keys.push({ hash, label: label.slice(0, 60), at: new Date().toISOString() });
+  saveLocal(local);
   return raw;
 }
 
 export async function validApiKey(raw: string): Promise<boolean> {
   const hash = createHash("sha256").update(raw).digest("hex");
-  const remote = await rest(`community_api_keys?key_hash=eq.${hash}&select=id&limit=1`);
-  if (remote?.ok) {
-    const rows = (await remote.json()) as unknown[];
-    return rows.length > 0;
+  const db = remote();
+  if (db) {
+    const { data, error } = await db.rpc("verify_api_key", { p_key_hash: hash });
+    if (error) return false;
+    return data === true;
   }
   return loadLocal().keys.some((row) => row.hash === hash);
 }

@@ -45,7 +45,7 @@ export async function POST(request: Request) {
     if (!TYPES.has(type) || !key || note.length < 8) {
       return Response.json({ error: "Say what was flagged and why it is wrong." }, { status: 400 });
     }
-    await openDispute(type, key, note);
+    await openDispute(type, key, note, reporterHash(ip));
     return Response.json({ ok: true });
   }
   const type = String(form.get("type") ?? "") as SubjectType;
