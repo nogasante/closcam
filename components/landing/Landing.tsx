@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useEffect, useRef, useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import { ShieldCheck, MessageCircle, PhoneCall } from "lucide-react";
 import { useConsent } from "@/lib/storage";
@@ -19,13 +20,30 @@ export function Landing() {
   const consent = useConsent();
   const start = consent ? "/hub" : "/disclaimer";
   const rise = reduce ? { opacity: 1, y: 0 } : undefined;
+  const heroCta = useRef<HTMLAnchorElement>(null);
+  const [navCta, setNavCta] = useState(false);
+
+  useEffect(() => {
+    const node = heroCta.current;
+    if (!node) return;
+    const observer = new IntersectionObserver(([entry]) => {
+      setNavCta(!entry?.isIntersecting);
+    });
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, []);
 
   return (
     <div className="min-h-dvh bg-[#2D2E32]">
       <header className="nav-frost">
         <div className="mx-auto flex w-full max-w-6xl items-center justify-between px-4 py-3 lg:px-8">
           <p className="display text-[17px] font-extrabold">CloScam</p>
-          <Link href={start} className="btn btn-primary hidden w-auto px-4 sm:flex">
+          <Link
+            href={start}
+            className={`nav-cta btn btn-primary ${navCta ? "is-on" : ""}`}
+            tabIndex={navCta ? 0 : -1}
+            aria-hidden={navCta ? undefined : true}
+          >
             Start training
           </Link>
         </div>
@@ -54,7 +72,7 @@ export function Landing() {
             animate={rise ?? { opacity: 1, y: 0 }}
             transition={{ duration: 0.45, delay: reduce ? 0 : 0.16 }}
           >
-            <Link href={start} className="btn btn-primary sm:w-auto sm:px-6">
+            <Link ref={heroCta} href={start} className="btn btn-primary sm:w-auto sm:px-6">
               Start training
             </Link>
           </motion.div>

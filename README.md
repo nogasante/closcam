@@ -50,7 +50,6 @@ No backend, database, or server secret is used.
 - TypeScript 5
 - Tailwind CSS 4
 - Framer Motion, MIT, for message entrance
-- @splinetool/react-spline and @splinetool/runtime, for the landing hero scene
 - Lucide icons, ISC
 - Nunito and Source Sans 3, SIL Open Font License 1.1, via Fontsource
 - IBM Plex Mono, SIL Open Font License 1.1, via Fontsource, for amounts and numbers
@@ -62,7 +61,7 @@ No backend, database, or server secret is used.
 
 Room art, the in-app phone frame, and the chat wallpaper are original and drawn in the app. Low-poly kits were not used after a box scene read as a placeholder.
 
-The landing hero, on a wide screen, is the Spline Community scene "iPhone Mockup" by vexus, [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). File: https://community.spline.design/file/5209eac0-5eb0-4577-9f00-402a1561c0cf. A drawn phone plays in its place on a small screen, a slow connection, reduced motion, or while the scene is still loading.
+The landing hero on a wide screen is a rendered loop of the Spline Community scene "iPhone Mockup" by vexus, [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). File: https://community.spline.design/file/5209eac0-5eb0-4577-9f00-402a1561c0cf. The app does not load the Spline runtime. The clip is a still camera move of that remixed scene, with the viewer badge cropped out. On a phone, and when motion is reduced or data saving is on, a drawn phone plays instead.
 
 No database, no authentication service, no payments SDK, and no analytics SDK. Next.js anonymous framework telemetry is turned off in the npm scripts (`NEXT_TELEMETRY_DISABLED=1`). Drill scripts are static JSON in `data/scenarios.json`. Optional progress is stored only in the browser, under the key `closcam-progress`, and holds drill ids, first-try results, and a timestamp. No name is attached.
 

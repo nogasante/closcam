@@ -24,7 +24,7 @@ export function SiteFooter() {
         <a className="underline" href="https://community.spline.design/file/5209eac0-5eb0-4577-9f00-402a1561c0cf">
           iPhone Mockup
         </a>{" "}
-        by vexus, Spline Community,{" "}
+        by vexus, a rendered loop of the remixed Spline Community scene,{" "}
         <a className="underline" href="https://creativecommons.org/licenses/by/4.0/">
           CC BY 4.0
         </a>

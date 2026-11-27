@@ -30,7 +30,7 @@ export function DisclaimerView() {
         <button type="button" className="btn btn-primary" onClick={accept}>
           I understand, start training
         </button>
-        <Link href="/sources" className="btn btn-secondary">
+        <Link href="/sources" className="inline-flex min-h-11 items-center text-sm text-muted">
           Read official sources first
         </Link>
       </div>

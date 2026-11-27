@@ -1,75 +1,81 @@
 "use client";
 
-import dynamic from "next/dynamic";
 import Image from "next/image";
-import { useEffect, useState, useSyncExternalStore } from "react";
+import { useRef } from "react";
+import { useReducedMotion } from "framer-motion";
+import { useSyncExternalStore } from "react";
+import poster from "@/public/hero/phones-poster.webp";
 import { HeroPhone } from "./HeroPhone";
 
-const SCENE = "https://prod.spline.design/2Q27OEI4ECSYhOld/scene.splinecode";
-
-function subscribeSpline(onChange: () => void) {
-  const motion = window.matchMedia("(prefers-reduced-motion: reduce)");
-  const width = window.matchMedia("(max-width: 1023px)");
-  motion.addEventListener("change", onChange);
-  width.addEventListener("change", onChange);
-  return () => {
-    motion.removeEventListener("change", onChange);
-    width.removeEventListener("change", onChange);
-  };
-}
-
-const Spline = dynamic(() => import("@splinetool/react-spline"), {
-  ssr: false,
-  loading: () => null,
-});
-
-function splineAllowed(): boolean {
-  if (typeof window === "undefined") return false;
-  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return false;
-  if (window.matchMedia("(max-width: 1023px)").matches) return false;
-  const connection = (navigator as Navigator & {
-    connection?: { saveData?: boolean; effectiveType?: string };
-  }).connection;
-  const slow =
-    Boolean(connection?.saveData) ||
-    connection?.effectiveType === "slow-2g" ||
-    connection?.effectiveType === "2g";
-  return !slow;
+function useSaveData(): boolean {
+  return useSyncExternalStore(
+    (onChange) => {
+      const connection = (navigator as Navigator & { connection?: EventTarget }).connection;
+      connection?.addEventListener("change", onChange);
+      return () => connection?.removeEventListener("change", onChange);
+    },
+    () => Boolean((navigator as Navigator & { connection?: { saveData?: boolean } }).connection?.saveData),
+    () => false,
+  );
 }
 
 export function HeroStage() {
-  const allow = useSyncExternalStore(subscribeSpline, splineAllowed, () => false);
-  const [ready, setReady] = useState(false);
-  const [failed, setFailed] = useState(false);
+  const reduce = useReducedMotion();
+  const saveData = useSaveData();
+  const quiet = reduce || saveData;
+  const layer = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    if (!allow || ready) return;
-    const timer = window.setTimeout(() => setFailed(true), 12000);
-    return () => window.clearTimeout(timer);
-  }, [allow, ready]);
+  function onMove(event: React.PointerEvent<HTMLDivElement>) {
+    if (quiet || !layer.current) return;
+    const rect = event.currentTarget.getBoundingClientRect();
+    const x = ((event.clientX - rect.left) / rect.width - 0.5) * 14;
+    const y = ((event.clientY - rect.top) / rect.height - 0.5) * 8;
+    layer.current.style.transform = `translate3d(${x}px, ${y}px, 0)`;
+  }
 
-  if (!allow || failed) return <HeroPhone />;
+  function onLeave() {
+    if (layer.current) layer.current.style.transform = "translate3d(0, 0, 0)";
+  }
 
   return (
-    <div className="hero-stage relative w-full overflow-hidden bg-[#2D2E32]">
-      <Image
-        src="/hero-poster.png"
-        alt=""
-        fill
-        priority
-        className={`object-cover ${ready ? "invisible" : ""}`}
-      />
-      {ready ? null : (
-        <div className="relative z-10 flex h-full items-center justify-center">
-          <HeroPhone />
+    <>
+      <div className="lg:hidden">
+        <HeroPhone />
+      </div>
+      <div
+        className="hero-stage relative hidden w-full overflow-hidden bg-[#2D2E32] lg:block"
+        onPointerMove={onMove}
+        onPointerLeave={onLeave}
+      >
+        <div ref={layer} className="hero-parallax absolute inset-0">
+          <div className={quiet ? "absolute inset-0" : "hero-float absolute inset-0"}>
+            <Image
+              src={poster}
+              alt="Two phones on concrete steps. One shows a chat. The other shows an incoming call."
+              fill
+              priority
+              placeholder="blur"
+              sizes="(max-width: 1023px) 32px, 640px"
+              className="hero-still object-cover"
+            />
+            {quiet ? null : (
+              <video
+                className="hero-film absolute inset-0 h-full w-full object-cover"
+                autoPlay
+                muted
+                loop
+                playsInline
+                preload="metadata"
+                poster="/hero/phones-poster.webp"
+                aria-hidden="true"
+              >
+                <source src="/hero/phones.webm" type="video/webm" />
+                <source src="/hero/phones.mp4" type="video/mp4" />
+              </video>
+            )}
+          </div>
         </div>
-      )}
-      <Spline
-        scene={SCENE}
-        htmlContentMode="sandbox"
-        onLoad={() => setReady(true)}
-        className={`absolute inset-0 h-full w-full ${ready ? "opacity-100" : "opacity-0"}`}
-      />
-    </div>
+      </div>
+    </>
   );
 }
