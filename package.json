@@ -6,7 +6,8 @@
     "dev": "NEXT_TELEMETRY_DISABLED=1 next dev",
     "build": "NEXT_TELEMETRY_DISABLED=1 next build",
     "start": "NEXT_TELEMETRY_DISABLED=1 next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "test": "node --experimental-strip-types --test tests/*.test.ts"
   },
   "dependencies": {
     "@ai-sdk/google": "^4.0.128",

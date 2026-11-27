@@ -6,7 +6,7 @@ import { motion, useReducedMotion } from "framer-motion";
 import { Star } from "lucide-react";
 import { summarise } from "@/lib/scoring";
 import { getScenarios } from "@/lib/scenarios";
-import { clearProgress, useProgress } from "@/lib/storage";
+import { clearProgress, useProgress, useProtectSteps } from "@/lib/storage";
 import { CountUp } from "./motion/CountUp";
 import { PageShell } from "./PageShell";
 import { QuietFooter } from "./ReportStrip";
@@ -16,6 +16,8 @@ export function ScoreView({ total }: { total: number }) {
   const progress = useProgress();
   const summary = summarise(progress, total);
   const scenarios = getScenarios();
+  const protect = useProtectSteps();
+  const protectCorrect = ["p-pin", "p-code", "p-call", "p-recover"].filter((id) => protect[id]?.correct).length;
   const [confirmClear, setConfirmClear] = useState(false);
   const stars = summary.correct >= 8 ? 3 : summary.correct >= 5 ? 2 : summary.correct > 0 ? 1 : 0;
 
@@ -54,6 +56,7 @@ export function ScoreView({ total }: { total: number }) {
       {summary.band ? <p className="mt-4 font-semibold">{summary.band}</p> : (
         <p className="mt-4">You have not finished a drill yet.</p>
       )}
+      <p className="mt-4 text-sm text-muted">Protection {protectCorrect} / 4 on the first try.</p>
       <ul className="mt-6 grid gap-4">
         {scenarios.map((scenario, index) => {
           const result = progress.results[scenario.id];
@@ -90,9 +93,6 @@ export function ScoreView({ total }: { total: number }) {
           </Link>
           <Link href="/hub" className="inline-flex min-h-11 items-center text-muted">
             Mission map
-          </Link>
-          <Link href="/check" className="inline-flex min-h-11 items-center text-muted">
-            Check a message
           </Link>
         </p>
       </div>

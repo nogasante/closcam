@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
 import { scanFlags, type FlagReport } from "@/lib/flags";
 import { useMounted } from "@/lib/storage";
@@ -32,7 +33,12 @@ export function ToolsClient({ drills }: { drills: DrillScript[] }) {
 
   return (
     <PageShell banner={tab === "drill"}>
-      <h1 className="text-3xl font-bold tracking-tight">Practice tools</h1>
+      <h1 className="text-3xl font-bold tracking-tight">Tools</h1>
+      <p className="mt-3 flex flex-wrap gap-x-4 text-sm">
+        <Link href="/check" className="inline-flex min-h-11 items-center">Scam checker</Link>
+        <Link href="/report" className="inline-flex min-h-11 items-center">Report</Link>
+        <Link href="/developers" className="inline-flex min-h-11 items-center">Developers</Link>
+      </p>
       <p className="mt-2 text-muted">
         A rule list for urgency, a PIN or code, &quot;do not call&quot;, a payment link, a too-good
         price, and an unofficial-looking number.

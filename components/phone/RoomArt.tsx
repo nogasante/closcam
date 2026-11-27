@@ -74,6 +74,14 @@ function Scene({ id }: { id: string }) {
     return (
       <g>
         <Phone x={36} y={16} gid={id} />
+        <rect x="44" y="34" width="48" height="16" rx="4" fill="#2c3a44" />
+        <rect x="50" y="54" width="52" height="16" rx="4" fill="#0f6e56" />
+        <text x="48" y="45" fill="#f7f4ee" fontSize="7" fontFamily="sans-serif">
+          Send
+        </text>
+        <text x="54" y="65" fill="#f4fff8" fontSize="7" fontFamily="sans-serif">
+          No
+        </text>
         <rect x="128" y="34" width="168" height="28" rx="8" fill="#243038" />
         <text x="140" y="53" fill="#f7f4ee" fontSize="13" fontFamily="sans-serif">
           024 318 2201

@@ -7,6 +7,18 @@ import { useSyncExternalStore } from "react";
 import poster from "@/public/hero/phones-poster.webp";
 import { HeroPhone } from "./HeroPhone";
 
+function useWide(): boolean {
+  return useSyncExternalStore(
+    (onChange) => {
+      const query = window.matchMedia("(min-width: 1024px)");
+      query.addEventListener("change", onChange);
+      return () => query.removeEventListener("change", onChange);
+    },
+    () => window.matchMedia("(min-width: 1024px)").matches,
+    () => false,
+  );
+}
+
 function useSaveData(): boolean {
   return useSyncExternalStore(
     (onChange) => {
@@ -20,6 +32,7 @@ function useSaveData(): boolean {
 }
 
 export function HeroStage() {
+  const wide = useWide();
   const reduce = useReducedMotion();
   const saveData = useSaveData();
   const quiet = reduce || saveData;
@@ -37,13 +50,12 @@ export function HeroStage() {
     if (layer.current) layer.current.style.transform = "translate3d(0, 0, 0)";
   }
 
+  if (!wide) return <HeroPhone />;
+
   return (
     <>
-      <div className="lg:hidden">
-        <HeroPhone />
-      </div>
       <div
-        className="hero-stage relative hidden w-full overflow-hidden bg-[#2D2E32] lg:block"
+        className="hero-stage relative w-full overflow-hidden bg-[#2D2E32]"
         onPointerMove={onMove}
         onPointerLeave={onLeave}
       >

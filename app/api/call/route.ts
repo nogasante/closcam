@@ -1,6 +1,6 @@
 import { generateText } from "ai";
 import { redact, scriptedLine, type Persona, type Turn } from "@/lib/call/engine";
-import { gatewayModel, geminiLanguageModel } from "@/lib/server/gemini";
+import { gatewayModel, geminiLanguageModel, providerOrder } from "@/lib/server/gemini";
 
 export const runtime = "nodejs";
 
@@ -45,7 +45,9 @@ export async function POST(request: Request) {
 
   const fallback = scriptedLine(persona, history);
   const google = geminiLanguageModel();
-  const model = google ?? gatewayModel();
+  const gateway = gatewayModel();
+  const order = providerOrder(Boolean(google), Boolean(gateway));
+  const model = order === "gemini" ? google : order === "gateway" ? gateway : null;
   if (!model) {
     return Response.json({ line: fallback, source: "script" });
   }

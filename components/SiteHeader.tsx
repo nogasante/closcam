@@ -8,8 +8,8 @@ export function SiteHeader({ action }: { action?: React.ReactNode }) {
           CloScam
         </Link>
         <div className="flex items-center gap-4">
-          <Link href="/check" className="hidden min-h-11 items-center text-sm font-semibold lg:inline-flex">
-            Check
+          <Link href="/tools" className="hidden min-h-11 items-center text-sm font-semibold lg:inline-flex">
+            Tools
           </Link>
           {action}
         </div>
@@ -24,8 +24,8 @@ export function SiteFooter() {
       <div className="flex items-center justify-between">
         <p>CloScam</p>
         <p className="flex gap-4">
-          <Link href="/check" className="underline">
-            Scam checker
+          <Link href="/tools" className="underline">
+            Tools
           </Link>
           <span>292 · 18555</span>
         </p>

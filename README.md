@@ -54,7 +54,9 @@ See `.env.example` for the variable names.
 - Nunito and Source Sans 3, SIL Open Font License 1.1, via Fontsource
 - IBM Plex Mono, SIL Open Font License 1.1, via Fontsource, for amounts and numbers
 - Vercel AI SDK, Apache-2.0, and `@ai-sdk/google`, for the optional live-call line and the scam checker
-- Community number and site lists, such as Osebow, are not scraped. `lib/check/lists.ts` is an empty adapter until a documented API and permission exist.
+- Osebow (osebow.com, by Cecil Anglow) is a community fraud database. It has no public API, so CloScam does not scrape it. When a check contains a Ghana number, the page links to osebow.com, osebow.com/report, and osebow.com/business. `lib/check/lists.ts` keeps an empty adapter for an official API later.
+- CloScam community reports live at `/report`. A number is flagged only after 3 different reporters. Evidence is not published and does not flag an entry by itself. The model never writes a report. Without `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY`, reports are stored in `.data/community-flags.json` on that server. Set `COMMUNITY_REPORTER_SALT` in production. The schema is `supabase/migrations/20261127_community_flags.sql`.
+- Public read API: `GET /api/v1/lookup?type=phone|url|business&q=`. Free keys are created at `/developers`. Spec: `/api/v1/openapi.json`. The checker, report form, and API sit behind Tools, not the training header on a phone.
 - ESLint 9, with eslint-config-next
 - Node.js
 - Vercel, for the public deploy

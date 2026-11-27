@@ -2,114 +2,200 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { recordProtect } from "@/lib/storage";
-import { PageShell } from "@/components/PageShell";
+import { StatusBar } from "@/components/phone/StatusBar";
 import { ReportStrip } from "@/components/ReportStrip";
+import { recordProtect, recordProtectStep, useProtectSteps } from "@/lib/storage";
 
 const STEPS = [
   {
-    title: "A text you cannot read",
-    body: "【WhatsApp】你的验证码是 382-194，请勿告诉他人。",
-    prompt: "What do you do with this text?",
-    options: [
-      { id: "forward", label: "Forward it to the person who asked", correct: false },
-      { id: "keep", label: "Do not forward it. I cannot read it.", correct: true },
-    ],
-    why: "The scammer started WhatsApp registration on a phone set to Chinese, so the SMS arrived in Chinese. In English it says not to tell anyone the code. Forwarding it gives them the account.",
-  },
-  {
+    id: "p-pin",
     title: "Two-step verification",
-    body: "Path: WhatsApp, Settings, Account, Two-step verification, Enable. The PIN stays with you.",
-    prompt: "What do you do with that PIN?",
-    options: [
-      { id: "share", label: "Read it to a caller who says they are security", correct: false },
-      { id: "keep", label: "Turn it on, and never share it", correct: true },
-    ],
-    why: "Two-step verification means a registration code alone is not enough. No caller, friend, or agent needs that PIN.",
+    correct: "Set a PIN and add an email. I will not share the PIN.",
+    wrong: "Skip it. A caller can turn it on for me.",
+    lesson: "The path is Settings, Account, Two-step verification. The PIN and the email stay with you. No caller needs them.",
   },
   {
-    title: "A strange request in an old chat",
-    body: "A saved contact asks for money to a number you do not save for them, and says not to call.",
-    prompt: "How do you check?",
-    options: [
-      { id: "reply", label: "Reply in the same chat", correct: false },
-      { id: "call", label: "Call the number I already save for them", correct: true },
-    ],
-    why: "The chat can belong to someone else. A normal call to the saved line is the check. Do not use the new wallet number.",
+    id: "p-code",
+    title: "A code to forward",
+    correct: "Do not send it. I cannot read that text.",
+    wrong: "Send the code to Ama.",
+    lesson: "A saved chat can still be someone else. A registration code, even in another language, is not for forwarding.",
   },
   {
-    title: "If the account is already gone",
-    body: "You cannot open your chat, and friends say you asked them for money.",
-    prompt: "What do you do first?",
-    options: [
-      { id: "pay", label: "Pay the number in the chat so they stop", correct: false },
-      { id: "warn", label: "Recover the account and warn your contacts it was not you", correct: true },
-    ],
-    why: "Use the official recovery steps. Tell family and friends the account is not you. Do not send money to numbers that chat gives out.",
+    id: "p-call",
+    title: "Call the saved number",
+    correct: "Call 024 318 2201, the number I already saved.",
+    wrong: "Send the money to 055 111 4488.",
+    lesson: "Check a strange money request by calling the number you already have for that person. Do not use the new wallet number.",
   },
-];
+  {
+    id: "p-recover",
+    title: "The account is gone",
+    correct: "Reinstall, verify my number, warn contacts, and remove linked devices.",
+    wrong: "Pay the number in the chat so they stop.",
+    lesson: "Recover the account from the app, tell friends the messages were not you, and remove devices you do not recognise.",
+  },
+] as const;
 
 export function ProtectDrill() {
-  const [step, setStep] = useState(0);
-  const [picked, setPicked] = useState<string | null>(null);
-  const current = STEPS[step];
-  const choice = current?.options.find((item) => item.id === picked) ?? null;
-  const done = step >= STEPS.length;
+  const saved = useProtectSteps();
+  const [index, setIndex] = useState(0);
+  const [menu, setMenu] = useState<"root" | "account" | "choose">("root");
+  const [picked, setPicked] = useState<boolean | null>(null);
+  const step = STEPS[index];
+  const done = index >= STEPS.length;
+  const correctCount = STEPS.filter((item) => saved[item.id]?.correct).length;
+
+  function choose(correct: boolean) {
+    if (!step || picked !== null) return;
+    recordProtectStep(step.id, correct);
+    setPicked(correct);
+    const next = { ...saved, [step.id]: { correct, at: "" } };
+    if (STEPS.every((item) => next[item.id])) recordProtect();
+  }
+
+  function advance() {
+    setPicked(null);
+    setMenu("root");
+    setIndex((value) => value + 1);
+  }
 
   return (
-    <PageShell>
-      <p className="text-[12px] tracking-wide text-muted uppercase">Protection {done ? "" : `${step + 1} of ${STEPS.length}`}</p>
-      {done ? (
-        <div className="mt-3 grid gap-4">
-          <h1 className="text-[28px] font-medium tracking-tight">That is the lock.</h1>
-          <p className="text-[15px] text-muted">
-            Do not forward a code. Turn on two-step verification. Call the saved line. If the account is gone, recover it and warn your contacts.
-          </p>
-          <ReportStrip />
-          <Link href="/" className="btn btn-primary">
-            Back to the junction
-          </Link>
-        </div>
-      ) : current ? (
-        <div className="mt-3 grid gap-4">
-          <h1 className="text-[28px] font-medium tracking-tight">{current.title}</h1>
-          <p className="border border-line px-3 py-3 text-[15px] leading-relaxed">{current.body}</p>
-          <p className="text-[15px]">{current.prompt}</p>
-          <div className="grid gap-2">
-            {current.options.map((item) => (
-              <button
-                key={item.id}
-                type="button"
-                className="btn btn-choice"
-                onClick={() => {
-                  setPicked(item.id);
-                  if (step === STEPS.length - 1) recordProtect();
-                }}
-              >
-                {item.label}
-              </button>
-            ))}
+    <div className="min-h-dvh bg-[#1a1d21]">
+      <div className="device mx-auto flex min-h-dvh flex-col lg:min-h-[720px] lg:py-6">
+        <div className="device-screen flex min-h-0 flex-1 flex-col bg-[#0c1116] text-[#f7f4ee]">
+          <StatusBar />
+          <header className="flex items-center gap-2 bg-[#1a242c] px-2 py-2">
+            <Link href="/hub" className="inline-flex min-h-11 items-center px-2 text-sm" aria-label="Back to rooms">
+              Back
+            </Link>
+            <p className="font-extrabold">{done ? "Protection" : step?.title}</p>
+          </header>
+          <div className="flex-1 overflow-y-auto px-4 py-4">
+            {done ? (
+              <div className="grid gap-4">
+                <h1 className="text-2xl font-extrabold">Protection {correctCount} / {STEPS.length}</h1>
+                <p className="text-muted">First answers only. You can run a step again, and the first one stays on the record.</p>
+                <ul className="grid gap-2 text-sm">
+                  {STEPS.map((item) => (
+                    <li key={item.id}>
+                      {item.title}: {saved[item.id] ? (saved[item.id]?.correct ? "Met" : "Missed") : "Open"}
+                    </li>
+                  ))}
+                </ul>
+                <ReportStrip />
+              </div>
+            ) : step ? (
+              <StepBody stepId={step.id} menu={menu} setMenu={setMenu} />
+            ) : null}
           </div>
-          {choice ? (
-            <div className="grid gap-3">
-              <p className="text-[13px] tracking-wide text-muted uppercase">
-                {choice.correct ? "That is the move" : "Not that one"}
-              </p>
-              <p className="text-[15px]">{current.why}</p>
-              <button
-                type="button"
-                className="btn btn-primary"
-                onClick={() => {
-                  setPicked(null);
-                  setStep((value) => value + 1);
-                }}
-              >
-                {step === STEPS.length - 1 ? "Finish" : "Next"}
-              </button>
+          {!done && step && (step.id !== "p-pin" || menu === "choose") ? (
+            <div className="reply-sheet grid gap-2 px-3 py-3">
+              {picked === null ? (
+                <>
+                  <button type="button" className="reply-choice" onClick={() => choose(true)}>
+                    {step.correct}
+                  </button>
+                  <button type="button" className="reply-choice" onClick={() => choose(false)}>
+                    {step.wrong}
+                  </button>
+                </>
+              ) : (
+                <div className="lift grid gap-3 px-3 py-3">
+                  <p className="text-lg font-extrabold">{picked ? "That is the move" : "Not that one"}</p>
+                  <p>{step.lesson}</p>
+                  <p className="text-sm text-muted">
+                    {saved[step.id] && saved[step.id]?.correct !== picked
+                      ? "Your first answer is the one on the record."
+                      : "First answer saved."}
+                  </p>
+                  <button type="button" className="btn btn-primary" onClick={advance}>
+                    {index === STEPS.length - 1 ? "See the score" : "Next step"}
+                  </button>
+                </div>
+              )}
             </div>
           ) : null}
         </div>
-      ) : null}
-    </PageShell>
+      </div>
+    </div>
+  );
+}
+
+function StepBody({
+  stepId,
+  menu,
+  setMenu,
+}: {
+  stepId: string;
+  menu: "root" | "account" | "choose";
+  setMenu: (value: "root" | "account" | "choose") => void;
+}) {
+  if (stepId === "p-pin") {
+    if (menu === "root") {
+      return (
+        <div className="grid gap-2">
+          <p className="text-sm text-muted">Settings</p>
+          <MenuRow label="Account" onClick={() => setMenu("account")} />
+          <MenuRow label="Chats" />
+          <MenuRow label="Notifications" />
+        </div>
+      );
+    }
+    if (menu === "account") {
+      return (
+        <div className="grid gap-2">
+          <p className="text-sm text-muted">Account</p>
+          <MenuRow label="Two-step verification" onClick={() => setMenu("choose")} />
+          <MenuRow label="Privacy" />
+        </div>
+      );
+    }
+    return (
+      <div className="grid gap-3">
+        <p>Set a 6-digit PIN, then add an email you can open.</p>
+        <p className="text-sm text-muted">The PIN is not a code from a text message, and it is not for a caller.</p>
+      </div>
+    );
+  }
+  if (stepId === "p-code") {
+    return (
+      <div className="grid gap-3">
+        <p className="rounded-2xl bg-[#243038] px-3 py-2 text-sm">
+          Ama: Please help me vote. I sent a code by mistake. Send it to me.
+        </p>
+        <p className="rounded-2xl bg-[#1c1c1e] px-3 py-2 text-sm">
+          Text message: 【WhatsApp】你的验证码是 382-194，请勿告诉他人。
+        </p>
+      </div>
+    );
+  }
+  if (stepId === "p-call") {
+    return (
+      <div className="grid gap-3">
+        <p className="text-sm text-muted">Saved for Kofi</p>
+        <p className="text-xl font-extrabold">024 318 2201</p>
+        <p className="rounded-2xl bg-[#243038] px-3 py-2 text-sm">
+          The chat asks for GHS 800 at 055 111 4488 and says not to call.
+        </p>
+      </div>
+    );
+  }
+  return (
+    <div className="grid gap-3">
+      <p>You cannot open the account. Friends say you asked them for money.</p>
+      <p className="text-sm text-muted">Recovery is in the app: verify your number, then check linked devices.</p>
+    </div>
+  );
+}
+
+function MenuRow({ label, onClick }: { label: string; onClick?: () => void }) {
+  if (!onClick) {
+    return <p className="min-h-12 rounded-xl bg-[#1a242c] px-3 py-3 text-[#d5dde6]">{label}</p>;
+  }
+  return (
+    <button type="button" className="min-h-12 rounded-xl bg-[#243038] px-3 text-left font-semibold" onClick={onClick}>
+      {label}
+    </button>
   );
 }

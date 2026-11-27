@@ -21,3 +21,9 @@ export function gatewayModel(): string | null {
   if (!process.env.AI_GATEWAY_API_KEY && !process.env.VERCEL_OIDC_TOKEN) return null;
   return process.env.AI_GATEWAY_MODEL ?? "google/gemini-2.5-flash";
 }
+
+export function providerOrder(hasGeminiKey: boolean, hasGateway: boolean): "gemini" | "gateway" | "script" {
+  if (hasGeminiKey) return "gemini";
+  if (hasGateway) return "gateway";
+  return "script";
+}

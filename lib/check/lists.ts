@@ -16,8 +16,9 @@ export interface CommunityList {
 }
 
 /**
- * Osebow and similar community lists. No public API is documented here,
- * so this returns nothing. Do not scrape those sites.
+ * Osebow (osebow.com, by Cecil Anglow) is a community fraud database.
+ * It has no public API. This adapter returns nothing and must not scrape the site.
+ * Replace lookup when Osebow documents an API and permission is in place.
  */
 export const communityLists: CommunityList[] = [
   {

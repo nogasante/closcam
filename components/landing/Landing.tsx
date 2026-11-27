@@ -39,8 +39,8 @@ export function Landing() {
         <div className="mx-auto flex w-full max-w-6xl items-center justify-between px-4 py-3 lg:px-8">
           <p className="display text-[17px] font-extrabold">CloScam</p>
           <div className="flex items-center gap-4">
-          <Link href="/check" className="hidden min-h-11 items-center text-sm font-semibold lg:inline-flex">
-            Check
+          <Link href="/tools" className="hidden min-h-11 items-center text-sm font-semibold lg:inline-flex">
+            Tools
           </Link>
           <Link
             href={start}

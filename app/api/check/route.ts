@@ -1,6 +1,8 @@
 import { generateObject } from "ai";
 import { z } from "zod";
-import { assessRules, higherRisk, type CheckFlag, type Risk } from "@/lib/check/assess";
+import { assessRules, extractHosts, extractNumbers, higherRisk, type CheckFlag, type Risk } from "@/lib/check/assess";
+import { normalizePhone, normalizeUrl } from "@/lib/community/normalize";
+import { lookupSubject, type CommunityLookup } from "@/lib/community/store";
 import { REPORT_LINES } from "@/lib/sources";
 import { gatewayModel, geminiLanguageModel } from "@/lib/server/gemini";
 
@@ -34,15 +36,33 @@ function forModel(text: string): string {
   return text.replace(/(?<![\d])(\d{4,8})(?![\d])/g, "[digits]").slice(0, 2000);
 }
 
-function pack(risk: Risk, summary: string, flags: CheckFlag[], next: string, source: "gemini" | "gateway" | "rules") {
+function pack(
+  risk: Risk,
+  summary: string,
+  flags: CheckFlag[],
+  next: string,
+  numbers: string[],
+  community: CommunityLookup | null,
+  source: "gemini" | "gateway" | "rules",
+) {
   return {
     risk,
     summary,
     flags: flags.slice(0, 6),
     next,
     report: REPORT_LINES,
+    numbers,
+    community,
     source,
   };
+}
+
+async function communityFirst(numbers: string[], hosts: string[]): Promise<CommunityLookup | null> {
+  const phone = numbers.map((item) => normalizePhone(item)).find((item): item is string => Boolean(item));
+  if (phone) return lookupSubject("phone", phone);
+  const host = hosts.map((item) => normalizeUrl(item)).find((item): item is string => Boolean(item));
+  if (host) return lookupSubject("url", host);
+  return null;
 }
 
 export async function POST(request: Request) {
@@ -65,7 +85,9 @@ export async function POST(request: Request) {
   const google = geminiLanguageModel();
   const gateway = google ? null : gatewayModel();
   const model = google ?? gateway;
-  if (!model) return Response.json(pack(rules.risk, rules.summary, rules.flags, rules.next, "rules"));
+  const numbers = extractNumbers(text);
+  const community = await communityFirst(numbers, extractHosts(text));
+  if (!model) return Response.json(pack(rules.risk, rules.summary, rules.flags, rules.next, numbers, community, "rules"));
 
   try {
     const { object } = await generateObject({
@@ -82,9 +104,9 @@ export async function POST(request: Request) {
       if (!flags.some((item) => item.label === flag.label)) flags.push(flag);
     }
     return Response.json(
-      pack(higherRisk(rules.risk, object.risk), object.summary, flags, object.next, google ? "gemini" : "gateway"),
+      pack(higherRisk(rules.risk, object.risk), object.summary, flags, object.next, numbers, community, google ? "gemini" : "gateway"),
     );
   } catch {
-    return Response.json(pack(rules.risk, rules.summary, rules.flags, rules.next, "rules"));
+    return Response.json(pack(rules.risk, rules.summary, rules.flags, rules.next, numbers, community, "rules"));
   }
 }

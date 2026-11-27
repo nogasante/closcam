@@ -46,7 +46,10 @@ export function recordFirstTry(id: string, correct: boolean): void {
 
 export function clearProgress(): void {
   window.localStorage.removeItem(PROGRESS_KEY);
+  window.localStorage.removeItem(PROTECT_STEPS_KEY);
+  window.localStorage.removeItem(PROTECT_KEY);
   window.dispatchEvent(new Event(PROGRESS_EVENT));
+  window.dispatchEvent(new Event(EXTRA_EVENT));
 }
 
 export function hasConsent(): boolean {
@@ -169,6 +172,45 @@ export function recordCall(correct: boolean): void {
 export function recordProtect(): void {
   window.localStorage.setItem(PROTECT_KEY, "done");
   window.dispatchEvent(new Event(EXTRA_EVENT));
+}
+
+const PROTECT_STEPS_KEY = "closcam-protect-steps";
+
+export type ProtectStepResult = { correct: boolean; at: string };
+
+export function readProtectSteps(): Record<string, ProtectStepResult> {
+  if (!canUseBrowser()) return {};
+  const raw = window.localStorage.getItem(PROTECT_STEPS_KEY);
+  if (!raw) return {};
+  try {
+    const parsed = JSON.parse(raw) as { results?: Record<string, ProtectStepResult> };
+    return parsed.results ?? {};
+  } catch {
+    return {};
+  }
+}
+
+export function recordProtectStep(id: string, correct: boolean): void {
+  const results = readProtectSteps();
+  if (results[id]) return;
+  results[id] = { correct, at: new Date().toISOString() };
+  window.localStorage.setItem(PROTECT_STEPS_KEY, JSON.stringify({ results }));
+  window.dispatchEvent(new Event(EXTRA_EVENT));
+}
+
+export function useProtectSteps(): Record<string, ProtectStepResult> {
+  const raw = useSyncExternalStore(
+    subscribeExtra,
+    () => window.localStorage.getItem(PROTECT_STEPS_KEY) ?? "",
+    () => "",
+  );
+  if (!raw) return {};
+  try {
+    const parsed = JSON.parse(raw) as { results?: Record<string, ProtectStepResult> };
+    return parsed.results ?? {};
+  } catch {
+    return {};
+  }
 }
 
 function subscribeExtra(onStoreChange: () => void) {

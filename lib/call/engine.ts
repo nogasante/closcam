@@ -28,17 +28,18 @@ export function scriptedLine(persona: Persona, history: Turn[]): string {
 
 export function judgeUtterance(text: string): "win" | "loss" | "push" {
   const value = text.toLowerCase();
+  const digits = value.replace(/\D/g, "");
+  if (digits.length >= 4) return "loss";
+  if (/\b(pin is|otp is|password is|the code is|here is the code)\b/.test(value)) return "loss";
   if (
     /\b(hang up|stop|scam|i will not|i won't|won't|do not|don't|official|report)\b/.test(value) ||
     /^(no|nope)\b/.test(value)
   ) {
     return "win";
   }
-  const digits = value.replace(/\D/g, "");
-  if (/\b(pin|otp|password|code)\b/.test(value) || digits.length >= 4) {
+  if (/\b(send|transfer|take it|go ahead|yes)\b/.test(value) && !/\b(not|don't|do not|won't)\b/.test(value)) {
     return "loss";
   }
-  if (/\b(send|transfer|take it|go ahead|yes)\b/.test(value)) return "loss";
   return "push";
 }
 
