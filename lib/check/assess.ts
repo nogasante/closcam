@@ -196,15 +196,12 @@ export async function assessRules(text: string): Promise<RulesVerdict> {
 
   const summary =
     risk === "low"
-      ? "Nothing in this text matches the usual tricks. Still confirm it on an official channel before you pay or share a code."
+      ? "Nothing here matches the usual tricks."
       : risk === "medium"
-        ? "One warning stands out. Do not pay or share a code until you have checked it yourself."
-        : "This matches several common scam patterns. Do not pay, and do not share a code.";
+        ? "One warning stands out."
+        : "This matches a common scam pattern.";
 
-  const next =
-    risk === "low"
-      ? "If money or a code is involved, open the official app or dial the short code you already know. Do not use a link from the message."
-      : "Stop. Do not reply with a code or send money. Call the person on the number you already saved, or use an official short code.";
+  const next = summary;
 
   return { risk, summary, flags, next, hits };
 }

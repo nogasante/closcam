@@ -11,7 +11,6 @@ import { shuffleChoices } from "@/lib/shuffle";
 import { recordFirstTry, useProgress } from "@/lib/storage";
 import type { Scenario } from "@/lib/types";
 import { ConsoleFrame, LeaveLink, type FlagEntry } from "@/components/console/ConsoleFrame";
-import { ReportStrip } from "@/components/ReportStrip";
 import { StatusBar } from "@/components/phone/StatusBar";
 import { CheckCheck, ChevronLeft, Info, Phone, Video } from "lucide-react";
 
@@ -54,7 +53,6 @@ function RoomPlay({ room, scenario }: { room: Room; scenario: Scenario }) {
   const [hit, setHit] = useState(false);
   const [seconds, setSeconds] = useState(45);
   const [draft, setDraft] = useState("");
-  const [answered, setAnswered] = useState(false);
   const [shake, setShake] = useState(false);
   const [infoOpen, setInfoOpen] = useState(false);
   const [smsOpen, setSmsOpen] = useState(false);
@@ -180,7 +178,6 @@ function RoomPlay({ room, scenario }: { room: Room; scenario: Scenario }) {
       setShake(true);
       window.setTimeout(() => setShake(false), 420);
     }
-    setAnswered(true);
     setPicked(id);
     setFollowShown(0);
     setSiteDone(false);
@@ -374,13 +371,7 @@ function RoomPlay({ room, scenario }: { room: Room; scenario: Scenario }) {
               </motion.div>
             ) : null}
             {phase === "debrief" ? (
-              <Debrief
-                room={room}
-                scenario={scenario}
-                correct={option?.correct ?? false}
-                nextId={nextId}
-                already={Boolean(progress.results[room.id] && !answered)}
-              />
+              <Debrief scenario={scenario} correct={option?.correct ?? false} nextId={nextId} />
             ) : null}
             {phase === "follow" && !playingSite ? (
               <p className="text-[13px] text-muted">Watch what happens next.</p>
@@ -475,17 +466,13 @@ function SiteCard({
 }
 
 function Debrief({
-  room,
   scenario,
   correct,
   nextId,
-  already,
 }: {
-  room: Room;
   scenario: Scenario;
   correct: boolean;
   nextId: string | null;
-  already: boolean;
 }) {
   const reduce = useReducedMotion();
   return (
@@ -497,26 +484,14 @@ function Debrief({
     >
       <p className="text-lg font-extrabold">{correct ? "Met" : "Missed"}</p>
       <p>{scenario.lesson}</p>
-      {already ? <p className="text-sm text-muted">First answer stays.</p> : null}
-      {room.reveal ? (
-        <div>
-          <p>{room.reveal.english}</p>
-          <p className="mt-2 text-sm text-muted">{room.reveal.why}</p>
-        </div>
-      ) : null}
       <ul className="grid gap-2">
-        {scenario.redFlags.map((flag) => (
+        {scenario.redFlags.slice(0, 3).map((flag) => (
           <li key={flag} className="border-l border-line pl-3 text-[14px]">
             {flag}
           </li>
         ))}
       </ul>
       <div className="grid gap-2">
-        {room.related?.map((link) => (
-          <Link key={link.href} href={link.href} className="min-h-11 text-[14px] text-green">
-            {link.label}
-          </Link>
-        ))}
         {nextId ? (
           <Link href={`/drills/${nextId}`} className="btn btn-primary">
             Next room
@@ -526,11 +501,7 @@ function Debrief({
             See results
           </Link>
         )}
-        <Link href={`/drills/${room.id}`} className="inline-flex min-h-11 items-center text-sm text-muted">
-          Run this room again
-        </Link>
       </div>
-      <ReportStrip />
     </motion.div>
   );
 }

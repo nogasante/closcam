@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { useState } from "react";
 import { StatusBar } from "@/components/phone/StatusBar";
-import { ReportStrip } from "@/components/ReportStrip";
 import { recordProtect, recordProtectStep, useProtectSteps } from "@/lib/storage";
 
 const STEPS = [
@@ -12,28 +11,28 @@ const STEPS = [
     title: "Two-step verification",
     correct: "Set a PIN and add an email. I will not share the PIN.",
     wrong: "Skip it. A caller can turn it on for me.",
-    lesson: "The path is Settings, Account, Two-step verification. The PIN and the email stay with you. No caller needs them.",
+    lesson: "The PIN and the email stay with you.",
   },
   {
     id: "p-code",
     title: "A code to forward",
     correct: "Do not send it. I cannot read that text.",
     wrong: "Send the code to Ama.",
-    lesson: "A saved chat can still be someone else. A registration code, even in another language, is not for forwarding.",
+    lesson: "A registration code is not for forwarding.",
   },
   {
     id: "p-call",
     title: "Call the saved number",
     correct: "Call 024 318 2201, the number I already saved.",
     wrong: "Send the money to 055 111 4488.",
-    lesson: "Check a strange money request by calling the number you already have for that person. Do not use the new wallet number.",
+    lesson: "Call the number you already saved.",
   },
   {
     id: "p-recover",
     title: "The account is gone",
     correct: "Reinstall, verify my number, warn contacts, and remove linked devices.",
     wrong: "Pay the number in the chat so they stop.",
-    lesson: "Recover the account from the app, tell friends the messages were not you, and remove devices you do not recognise.",
+    lesson: "Recover the account in the app and remove devices you do not recognise.",
   },
 ] as const;
 
@@ -82,7 +81,6 @@ export function ProtectDrill() {
                     </li>
                   ))}
                 </ul>
-                <ReportStrip />
               </div>
             ) : step ? (
               <StepBody stepId={step.id} menu={menu} setMenu={setMenu} />
@@ -101,13 +99,8 @@ export function ProtectDrill() {
                 </>
               ) : (
                 <div className="lift grid gap-3 px-3 py-3">
-                  <p className="text-lg font-extrabold">{picked ? "That is the move" : "Not that one"}</p>
+                  <p className="text-lg font-extrabold">{picked ? "Met" : "Missed"}</p>
                   <p>{step.lesson}</p>
-                  <p className="text-sm text-muted">
-                    {saved[step.id] && saved[step.id]?.correct !== picked
-                      ? "Your first answer is the one on the record."
-                      : "First answer saved."}
-                  </p>
                   <button type="button" className="btn btn-primary" onClick={advance}>
                     {index === STEPS.length - 1 ? "See the score" : "Next step"}
                   </button>

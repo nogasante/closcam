@@ -13,7 +13,6 @@ import {
 import { blip, startRing, stopRing } from "@/lib/live/sound";
 import { recordCall } from "@/lib/storage";
 import { ConsoleFrame, LeaveLink, type FlagEntry } from "@/components/console/ConsoleFrame";
-import { ReportStrip } from "@/components/ReportStrip";
 import { StatusBar } from "@/components/phone/StatusBar";
 
 const OTP = "【WhatsApp】你的验证码是 382-194，请勿告诉他人。";
@@ -279,11 +278,6 @@ export function CallRoom() {
                   </button>
                 </form>
               ) : null}
-            </div>
-          ) : null}
-          {ended ? (
-            <div className="border-t border-line px-3 py-3">
-              <ReportStrip />
             </div>
           ) : null}
         </div>

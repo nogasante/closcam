@@ -65,7 +65,7 @@
         "The redeem site is not your network menu, and it asks for a PIN.",
         "After payment, the seller can block you and the bundle never arrives."
       ],
-      "lesson": "Cheap data that starts with you sending money is the scam. The link comes after they have the cash.",
+      "lesson": "Cheap data that starts with you sending money is the scam.",
       "sources": [
         {
           "name": "CSA, Online shopping scam, Black Friday deals, 28 November 2025",
@@ -139,7 +139,7 @@
         "055 111 4488 is not the saved line 024 318 2201, and the prefix is different.",
         "A takeover starts when someone forwards a registration code. The attacker then asks that person's contacts for money."
       ],
-      "lesson": "Kofi's chat can be in someone else's hands. Call the line you already save for him before you send money to a different number.",
+      "lesson": "Call the number you already saved before you send money.",
       "sources": [
         {
           "name": "CSA, Surge in WhatsApp Account Takeovers, 29 May 2024",
@@ -209,7 +209,7 @@
         "The scammer started WhatsApp registration on a phone set to Chinese, so the SMS arrived in Chinese.",
         "Forwarding the code lets them open your account and ask your contacts for money."
       ],
-      "lesson": "That text was a WhatsApp registration code. Forwarding it gives away the account, even when you cannot read the warning.",
+      "lesson": "Forwarding that registration code gives away the account.",
       "sources": [
         {
           "name": "CSA, Surge in WhatsApp Account Takeovers, 29 May 2024",
@@ -337,7 +337,7 @@
         "Official care will not ask for your PIN or OTP by call, text, email or social media.",
         "The number may look local. That does not make the caller official."
       ],
-      "lesson": "Anyone who asks for your PIN or a code, even if they say they are customer care, is not legitimate care.",
+      "lesson": "A caller who asks for your PIN or a code is not real care.",
       "sources": [
         {
           "name": "Bank of Ghana, Digital Fraud and the Cost of Ignorance, 7 October 2026",
@@ -558,7 +558,7 @@
         "They want you to send money to a number, instead of using an official reversal.",
         "Even a real credit should not be sent on by you to a second number."
       ],
-      "lesson": "Do not send money because of an SMS or a story. Check your official wallet, and let official reversal handle real mistakes.",
+      "lesson": "Do not send money because of an SMS. Check the official wallet.",
       "sources": [
         {
           "name": "CSA, Ways to Avoid Being a Victim of Mobile Money Fraud",
@@ -617,7 +617,7 @@
         "Being asked to step away before you see a confirmation.",
         "Official advice is explicit: do not give your phone to an agent to do a transaction, and agents are not to ask for your PIN."
       ],
-      "lesson": "Your phone and your PIN stay in your hands. Wait for the official confirmation before you leave.",
+      "lesson": "Keep your phone and your PIN, and wait for the official confirmation.",
       "sources": [
         {
           "name": "CSA, Ways to Avoid Being a Victim of Mobile Money Fraud",
@@ -681,7 +681,7 @@
         "The prompt is a payment out of your wallet, not a refund in.",
         "Official operators will not ask you to approve a prompt or share a PIN or OTP through a random SMS."
       ],
-      "lesson": "If you did not start a payment, cancel the prompt. A \"refund\" that asks for your PIN is a withdrawal.",
+      "lesson": "A refund that asks for your PIN is a withdrawal.",
       "sources": [
         {
           "name": "Bank of Ghana, Digital Fraud and the Cost of Ignorance, 7 October 2026",

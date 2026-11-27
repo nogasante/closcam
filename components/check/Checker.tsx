@@ -76,18 +76,14 @@ export function Checker() {
           <p className="text-2xl font-extrabold capitalize">{verdict.risk}</p>
           <p className="mt-3">{verdict.summary}</p>
           {verdict.flags.length > 0 ? (
-            <ul className="mt-4 grid gap-3">
-              {verdict.flags.map((flag) => (
-                <li key={flag.label}>
-                  <p className="font-extrabold">{flag.label}</p>
-                  <p className="text-sm text-muted">{flag.detail}</p>
-                </li>
+            <ul className="mt-3 grid gap-1 text-sm">
+              {verdict.flags.slice(0, 3).map((flag) => (
+                <li key={flag.label}>{flag.label}</li>
               ))}
             </ul>
           ) : null}
-          <p className="mt-4">{verdict.next}</p>
           {verdict.community && verdict.community.status !== "clean_unknown" && verdict.numbers?.[0] ? (
-            <p className="mt-4 text-sm">
+            <p className="mt-3 text-sm">
               <Link
                 href={`/report?dispute=1&type=phone&value=${encodeURIComponent(verdict.numbers[0])}`}
               >
@@ -96,58 +92,46 @@ export function Checker() {
             </p>
           ) : null}
           {verdict.numbers && verdict.numbers.length > 0 ? (
-            <OsebowLinks
-              number={verdict.numbers[0] ?? ""}
-              copied={copied}
-              onCopy={(value) => setCopied(value)}
-            />
+            <a
+              className="btn btn-secondary mt-3"
+              href="https://osebow.com"
+              target="_blank"
+              rel="noreferrer"
+              onClick={() => {
+                const number = verdict.numbers?.[0] ?? "";
+                void navigator.clipboard.writeText(number).then(
+                  () => setCopied("number copied"),
+                  () => setCopied(""),
+                );
+              }}
+            >
+              Check this number on Osebow
+            </a>
           ) : null}
-          <div className="mt-4 grid gap-1 text-sm text-muted">
-            {(verdict.report.length > 0 ? verdict.report : REPORT_LINES).map((line) => (
-              <p key={line.label}>
-                {line.label}: {line.value}
-              </p>
-            ))}
-          </div>
+          {copied ? <p className="mt-2 text-sm text-muted">{copied}</p> : null}
         </article>
       ) : null}
+      <section className="mt-8">
+        <h2>Get help</h2>
+        <ul className="mt-2 text-sm leading-6">
+          <li>
+            <a href="https://osebow.com/report" target="_blank" rel="noreferrer">
+              Report a scammer
+            </a>
+          </li>
+          <li>
+            <a href="https://osebow.com/business" target="_blank" rel="noreferrer">
+              Find a business&apos;s official number
+            </a>
+          </li>
+          {REPORT_LINES.map((line) => (
+            <li key={line.label}>
+              {line.label}: {line.value}
+            </li>
+          ))}
+        </ul>
+      </section>
       <SiteFooter />
     </PageShell>
-  );
-}
-
-function OsebowLinks({
-  number,
-  copied,
-  onCopy,
-}: {
-  number: string;
-  copied: string;
-  onCopy: (value: string) => void;
-}) {
-  return (
-    <div className="mt-4 grid gap-2">
-      <a
-        className="btn btn-secondary"
-        href="https://osebow.com"
-        target="_blank"
-        rel="noreferrer"
-        onClick={() => {
-          void navigator.clipboard.writeText(number).then(
-            () => onCopy("number copied"),
-            () => onCopy(""),
-          );
-        }}
-      >
-        Check this number on Osebow
-      </a>
-      {copied ? <p className="text-sm text-muted">{copied}</p> : null}
-      <a className="inline-flex min-h-11 items-center text-sm text-muted" href="https://osebow.com/report" target="_blank" rel="noreferrer">
-        Report a scammer
-      </a>
-      <a className="inline-flex min-h-11 items-center text-sm text-muted" href="https://osebow.com/business" target="_blank" rel="noreferrer">
-        Find a business&apos;s official number
-      </a>
-    </div>
   );
 }
