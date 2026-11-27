@@ -184,7 +184,7 @@ export function CallRoom() {
             key={item.id}
             type="button"
             disabled={active || ringing}
-            className={`min-h-11 rounded-full border px-3 text-[13px] font-bold ${persona === item.id ? "border-green bg-[#2a2414] text-green" : "border-line text-muted"}`}
+            className={`hw-key min-h-11 px-3 text-[13px] font-bold ${persona === item.id ? "text-green" : "text-muted"}`}
             onClick={() => setPersona(item.id)}
           >
             {item.label}
@@ -207,7 +207,7 @@ export function CallRoom() {
               <div className="px-4 pt-4 text-center">
                 <Initials label={callerLabel} />
                 <p className="mt-3 text-lg font-extrabold">{callerLabel}</p>
-                <p className="mono text-sm text-white/70">{clock(callSeconds)}</p>
+                <p className="mono text-sm text-muted">{clock(callSeconds)}</p>
               </div>
               <div className="mt-3 flex-1 space-y-2 overflow-y-auto px-3">
                 {persona === "security" ? (
@@ -219,12 +219,12 @@ export function CallRoom() {
                     {turn.text}
                   </p>
                 ))}
-                {waiting ? <p className="text-sm text-white/60">They are talking.</p> : null}
+                {waiting ? <p className="text-sm text-muted">They are talking.</p> : null}
                 {ended ? (
                   <div className="pt-2">
                     <p className="text-sm font-extrabold">{ended === "win" ? "You kept the code." : "That code opened the account."}</p>
                     {persona === "security" ? (
-                      <p className="mt-2 text-sm text-white/70">
+                      <p className="mt-2 text-sm text-muted">
                         The text is Chinese because registration started on a phone set to Chinese. In English it says not to share 382-194.
                       </p>
                     ) : null}
@@ -234,7 +234,7 @@ export function CallRoom() {
               {pad && !ended ? (
                 <div className="grid grid-cols-3 gap-2 px-6 py-2 text-center text-lg">
                   {["1", "2", "3", "4", "5", "6", "7", "8", "9", "*", "0", "#"].map((key) => (
-                    <button key={key} type="button" className="min-h-11" onClick={() => setDraft((value) => value + key)}>
+                    <button key={key} type="button" className="hw-key min-h-11" onClick={() => setDraft((value) => value + key)}>
                       {key}
                     </button>
                   ))}
@@ -253,14 +253,14 @@ export function CallRoom() {
                     onChange={(event) => setDraft(event.target.value)}
                     autoComplete="off"
                     placeholder="What you would say"
-                    className="min-h-11 rounded-full bg-white/10 px-4 text-[16px]"
+                    className="say-field"
                     aria-label="What you would say"
                   />
                   <div className="flex items-center justify-between px-2 pb-3">
                     <Round icon={muted ? <MicOff size={18} /> : <Mic size={18} />} label={muted ? "Muted" : "Mute"} onClick={() => setMuted((value) => !value)} />
                     <Round icon={<span className="text-sm font-bold">123</span>} label={pad ? "Hide pad" : "Keypad"} onClick={() => setPad((value) => !value)} />
                     <Round icon={<Volume2 size={18} />} label={speaker ? "Speaker on" : "Speaker off"} onClick={() => setSpeaker((value) => !value)} />
-                    <button type="button" className="flex h-14 w-14 items-center justify-center rounded-full bg-[#e23b3b]" onClick={hangUp} aria-label="Hang up">
+                    <button type="button" className="hw-round flex h-14 w-14 items-center justify-center rounded-full bg-[#e23b3b] text-white" onClick={hangUp} aria-label="Hang up">
                       <PhoneOff size={22} />
                     </button>
                   </div>
@@ -316,14 +316,14 @@ function IncomingCall({
       <div className="text-center">
         <Initials label={label} />
         <p className="mt-6 text-2xl font-extrabold">{label}</p>
-        <p className="mono mt-1 text-sm text-white/70">+233 24 550 0193</p>
-        <p className="mt-2 text-sm text-white/60">Incoming call</p>
+        <p className="mono mt-1 text-sm text-muted">+233 24 550 0193</p>
+        <p className="mt-2 text-sm text-muted">Incoming call</p>
       </div>
       <div className="flex w-full max-w-xs items-center justify-between">
-        <button type="button" className="flex h-16 w-16 items-center justify-center rounded-full bg-[#3dce7c]" onClick={onAnswer} aria-label="Answer">
+        <button type="button" className="hw-round flex h-16 w-16 items-center justify-center rounded-full bg-[#3dce7c] text-[#062216]" onClick={onAnswer} aria-label="Answer">
           <Phone size={26} />
         </button>
-        <button type="button" className="flex h-16 w-16 items-center justify-center rounded-full bg-[#e23b3b]" onClick={onDecline} aria-label="Decline">
+        <button type="button" className="hw-round flex h-16 w-16 items-center justify-center rounded-full bg-[#e23b3b] text-white" onClick={onDecline} aria-label="Decline">
           <PhoneOff size={26} />
         </button>
       </div>
@@ -341,7 +341,7 @@ function Round({
   onClick: () => void;
 }) {
   return (
-    <button type="button" className="flex h-12 w-12 items-center justify-center rounded-full bg-white/10" onClick={onClick} aria-label={label}>
+    <button type="button" className="hw-key flex h-12 w-12 items-center justify-center rounded-full" onClick={onClick} aria-label={label}>
       {icon}
     </button>
   );

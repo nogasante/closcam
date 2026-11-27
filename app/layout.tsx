@@ -5,6 +5,7 @@ import "@fontsource/source-sans-3/latin-400.css";
 import "@fontsource/source-sans-3/latin-600.css";
 import "@fontsource/ibm-plex-mono/latin-500.css";
 import "./globals.css";
+import { PressSound } from "@/components/PressSound";
 
 export const metadata: Metadata = {
   title: {
@@ -17,7 +18,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#121a2b",
+  themeColor: "#1a1d21",
   width: "device-width",
   initialScale: 1,
 };
@@ -32,6 +33,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         >
           Skip to content
         </a>
+        <PressSound />
         {children}
       </body>
     </html>

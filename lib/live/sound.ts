@@ -28,6 +28,11 @@ export function blip() {
   tone(520, 0.05, 0.03);
 }
 
+export function press() {
+  tone(210, 0.025, 0.045);
+  window.setTimeout(() => tone(120, 0.03, 0.03), 16);
+}
+
 export function lossTone() {
   tone(180, 0.12, 0.04);
 }

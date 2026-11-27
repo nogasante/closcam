@@ -48,7 +48,6 @@ export function Landing() {
           </p>
         </div>
         <div className="relative mx-auto w-full max-w-[400px]">
-          <div className="absolute inset-x-8 top-10 h-64 rounded-full bg-[#f0b429]/25 blur-3xl" aria-hidden="true" />
           <div className="device device-hero relative mx-auto">
           <div className="device-screen chat-wall min-h-[520px]">
             <StatusBar />

@@ -15,7 +15,7 @@ export function SiteHeader({ action }: { action?: React.ReactNode }) {
 
 export function SiteFooter() {
   return (
-    <footer className="mx-auto flex w-full max-w-6xl items-center justify-between px-4 py-12 text-sm text-white/45 lg:px-8">
+    <footer className="mx-auto flex w-full max-w-6xl items-center justify-between px-4 py-12 text-sm text-muted lg:px-8">
       <p>CloScam</p>
       <p>292 · 18555</p>
     </footer>

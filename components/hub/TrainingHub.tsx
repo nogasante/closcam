@@ -61,9 +61,8 @@ export function TrainingHub({ drills }: { drills: DrillSummary[] }) {
       }
     >
       <RankToast rank={rank} xp={xp} mounted={mounted} />
-      <div className="lift px-4 py-4 sm:px-5">
-        <p className="text-xs font-bold tracking-wide text-green uppercase">Mission map</p>
-        <div className="mt-1 flex flex-wrap items-end justify-between gap-3">
+      <div className="lift px-4 py-5 sm:px-5">
+        <div className="flex flex-wrap items-end justify-between gap-3">
           <h1 className="text-3xl font-extrabold">Walk it before you pay.</h1>
           <p className="text-sm text-muted">
             {rank}
@@ -97,11 +96,11 @@ export function TrainingHub({ drills }: { drills: DrillSummary[] }) {
           );
         })}
       </ul>
-      <div className="mt-6 grid gap-3 sm:grid-cols-2">
-        <Link href="/call" className="btn btn-primary">
+      <div className="mt-8">
+        <Link href="/call" className="btn btn-primary sm:w-auto sm:px-6">
           Live call
         </Link>
-        <Link href="/protect" className="text-sm text-muted">
+        <Link href="/protect" className="mt-4 inline-flex min-h-11 items-center text-sm text-muted">
           Protection
         </Link>
       </div>

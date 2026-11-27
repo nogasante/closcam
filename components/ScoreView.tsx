@@ -50,24 +50,26 @@ export function ScoreView({ total }: { total: number }) {
           </Link>
         </p>
       ) : null}
-      <div className="mt-5 grid gap-2">
+      <div className="mt-6">
         <Link href="/checklist" className="btn btn-primary">
           Open the checklist
         </Link>
-        <Link href="/drills" className="btn btn-secondary">
-          Pick a drill
-        </Link>
-        <Link href="/hub" className="btn btn-secondary">
-          Mission map
-        </Link>
+        <p className="mt-4 flex flex-wrap gap-x-4 gap-y-2 text-sm">
+          <Link href="/drills" className="inline-flex min-h-11 items-center text-muted">
+            Pick a drill
+          </Link>
+          <Link href="/hub" className="inline-flex min-h-11 items-center text-muted">
+            Mission map
+          </Link>
+        </p>
       </div>
-      <div className="mt-8">
+      <div className="mt-6">
         {confirmClear ? (
-          <button type="button" className="btn btn-secondary" onClick={() => clearProgress()}>
+          <button type="button" className="min-h-11 text-sm text-muted" onClick={() => clearProgress()}>
             Yes, clear the score on this phone
           </button>
         ) : (
-          <button type="button" className="btn btn-secondary" onClick={() => setConfirmClear(true)}>
+          <button type="button" className="min-h-11 text-sm text-muted" onClick={() => setConfirmClear(true)}>
             Clear this phone&apos;s practice score
           </button>
         )}

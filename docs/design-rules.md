@@ -24,7 +24,7 @@ These rules govern every screen. They come from practice, not from a mood board.
 
 ## Chosen style
 
-Glass, applied with a limit. Three studies live at `/styles`. Soft hardware sinks the type into the same colour as the surface. Flat is clear and the least impressive. Glass keeps large type, one gold action, and a translucent layer, which is the Apple brief. The chat itself stays a solid dark thread so the messages stay readable. Frosted glass is for the nav and the page, not for every bubble.
+Soft hardware, applied with a limit. Three studies stay at `/styles`. The chassis, the nav, and the buttons are physical: a warm metal rim, a raised gold key, a pressed state. The phone screen is a separate dark display. Text, chat bubbles, and the reply sheet sit on colours dark enough to read at a glance. They do not share the panel colour.
 
 ## How a screen fails the audit
 
