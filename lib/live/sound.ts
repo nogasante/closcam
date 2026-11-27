@@ -37,6 +37,11 @@ export function lossTone() {
   tone(180, 0.12, 0.04);
 }
 
+export function markTone() {
+  tone(660, 0.06, 0.03);
+  window.setTimeout(() => tone(880, 0.08, 0.03), 70);
+}
+
 export function startRing() {
   stopRing();
   const tick = () => {

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Mic, MicOff, Phone, PhoneOff, Volume2 } from "lucide-react";
 import { useReducedMotion } from "framer-motion";
 import {
@@ -40,6 +40,7 @@ export function CallRoom() {
   const [muted, setMuted] = useState(false);
   const [speaker, setSpeaker] = useState(true);
   const [pad, setPad] = useState(false);
+  const [speaking, setSpeaking] = useState(false);
 
   useEffect(() => {
     if (!ringing) {
@@ -119,11 +120,16 @@ export function CallRoom() {
   }
 
   function speak(line: string, quiet: boolean | null) {
-    if (quiet || !window.speechSynthesis) return;
-    if (window.localStorage.getItem("closcam-sound") === "off") return;
+    if (quiet || !window.speechSynthesis || window.localStorage.getItem("closcam-sound") === "off") {
+      setSpeaking(false);
+      return;
+    }
     window.speechSynthesis.cancel();
     const utterance = new SpeechSynthesisUtterance(line);
     utterance.rate = 1;
+    utterance.onend = () => setSpeaking(false);
+    utterance.onerror = () => setSpeaking(false);
+    setSpeaking(true);
     window.speechSynthesis.speak(utterance);
   }
 
@@ -207,7 +213,8 @@ export function CallRoom() {
               <div className="px-4 pt-4 text-center">
                 <Initials label={callerLabel} />
                 <p className="mt-3 text-lg font-extrabold">{callerLabel}</p>
-                <p className="mono text-sm text-muted">{clock(callSeconds)}</p>
+                <p className="mono mt-1 text-2xl">{clock(callSeconds)}</p>
+                <Wave on={waiting || speaking} />
               </div>
               <div className="mt-3 flex-1 space-y-2 overflow-y-auto px-3">
                 {persona === "security" ? (
@@ -302,6 +309,16 @@ function Initials({ label }: { label: string }) {
   );
 }
 
+function Wave({ on }: { on: boolean }) {
+  return (
+    <span className={`wave mx-auto mt-3 ${on ? "wave-on" : ""}`} aria-hidden="true">
+      {Array.from({ length: 7 }, (_, index) => (
+        <span key={index} style={{ animationDelay: `${index * 0.08}s` }} />
+      ))}
+    </span>
+  );
+}
+
 function IncomingCall({
   label,
   onAnswer,
@@ -311,6 +328,16 @@ function IncomingCall({
   onAnswer: () => void;
   onDecline: () => void;
 }) {
+  const track = useRef<HTMLDivElement>(null);
+  const moved = useRef(0);
+  const [x, setX] = useState(0);
+
+  function point(event: React.PointerEvent) {
+    const rect = track.current?.getBoundingClientRect();
+    if (!rect) return 0;
+    return Math.max(0, Math.min(rect.width - 64, event.clientX - rect.left - 8));
+  }
+
   return (
     <div className="flex flex-1 flex-col items-center justify-between px-6 py-10">
       <div className="text-center">
@@ -319,12 +346,37 @@ function IncomingCall({
         <p className="mono mt-1 text-sm text-muted">+233 24 550 0193</p>
         <p className="mt-2 text-sm text-muted">Incoming call</p>
       </div>
-      <div className="flex w-full max-w-xs items-center justify-between">
-        <button type="button" className="hw-round flex h-16 w-16 items-center justify-center rounded-full bg-[#3dce7c] text-[#062216]" onClick={onAnswer} aria-label="Answer">
-          <Phone size={26} />
-        </button>
-        <button type="button" className="hw-round flex h-16 w-16 items-center justify-center rounded-full bg-[#e23b3b] text-white" onClick={onDecline} aria-label="Decline">
-          <PhoneOff size={26} />
+      <div className="w-full max-w-xs">
+        <div ref={track} className="slide-track">
+          <span className="pointer-events-none absolute inset-0 flex items-center justify-center text-sm text-muted">
+            Slide to answer
+          </span>
+          <button
+            type="button"
+            className="hw-round absolute top-1 left-1 flex h-14 w-14 items-center justify-center rounded-full bg-[#3dce7c] text-[#062216]"
+            style={{ transform: `translateX(${x}px)` }}
+            aria-label="Answer"
+            onPointerDown={(event) => {
+              moved.current = 0;
+              event.currentTarget.setPointerCapture(event.pointerId);
+            }}
+            onPointerMove={(event) => {
+              if (!event.currentTarget.hasPointerCapture(event.pointerId)) return;
+              const next = point(event);
+              moved.current = Math.max(moved.current, next);
+              setX(next);
+            }}
+            onPointerUp={() => {
+              const width = track.current?.clientWidth ?? 240;
+              if (moved.current < 12 || moved.current > width * 0.55) onAnswer();
+              else setX(0);
+            }}
+          >
+            <Phone size={24} />
+          </button>
+        </div>
+        <button type="button" className="mt-4 min-h-11 w-full text-sm text-muted" onClick={onDecline}>
+          Decline
         </button>
       </div>
     </div>

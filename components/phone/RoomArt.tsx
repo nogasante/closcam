@@ -13,7 +13,7 @@ const LABELS: Record<string, string> = {
 
 export function RoomArt({ id }: { id: string }) {
   return (
-    <svg viewBox="0 0 320 132" className="h-32 w-full" role="img" aria-label={LABELS[id] ?? "Training object"}>
+    <svg viewBox="0 0 320 132" preserveAspectRatio="xMidYMid slice" className="room-art absolute inset-0 h-full w-full" role="img" aria-label={LABELS[id] ?? "Training object"}>
       <defs>
         <linearGradient id={`${id}-metal`} x1="0" y1="0" x2="0" y2="1">
           <stop offset="0" stopColor="#e7e2d8" />
@@ -34,7 +34,7 @@ export function RoomArt({ id }: { id: string }) {
           <stop offset="1" stopColor="#0c1116" />
         </linearGradient>
       </defs>
-      <rect width="320" height="132" fill="#2a3038" />
+      <rect width="320" height="132" fill="#343a42" />
       <ellipse cx="168" cy="118" rx="108" ry="14" fill="#14181c" opacity="0.55" />
       <Scene id={id} />
     </svg>
@@ -89,13 +89,15 @@ function Scene({ id }: { id: string }) {
     return (
       <g>
         <Phone x={118} y={14} w={84} h={108} gid={id} />
-        <rect x="132" y="36" width="56" height="34" rx="6" fill="#2c3a44" />
-        <text x="140" y="50" fill="#d5dde6" fontSize="8" fontFamily="sans-serif">
-          Message
-        </text>
-        <text x="140" y="62" fill="#f7f4ee" fontSize="9" fontFamily="sans-serif">
-          验证码
-        </text>
+        <g className="art-pop">
+          <rect x="132" y="36" width="56" height="34" rx="6" fill="#2c3a44" />
+          <text x="140" y="50" fill="#d5dde6" fontSize="8" fontFamily="sans-serif">
+            Message
+          </text>
+          <text x="140" y="62" fill="#f7f4ee" fontSize="9" fontFamily="sans-serif">
+            验证码
+          </text>
+        </g>
       </g>
     );
   }
@@ -124,7 +126,7 @@ function Scene({ id }: { id: string }) {
           <circle key={dot} cx={128 + dot * 18} cy="41" r="3" fill="#f0b429" />
         ))}
         {[0, 1, 2, 3, 4, 5, 6, 7, 8].map((key) => (
-          <rect key={key} x={114 + (key % 3) * 32} y={60 + Math.floor(key / 3) * 16} width="22" height="10" rx="3" fill="#3a414a" />
+          <rect key={key} className={key === 4 ? "art-key" : undefined} x={114 + (key % 3) * 32} y={60 + Math.floor(key / 3) * 16} width="22" height="10" rx="3" fill="#3a414a" />
         ))}
       </g>
     );
@@ -135,6 +137,9 @@ function Scene({ id }: { id: string }) {
         <rect x="46" y="28" width="140" height="78" rx="16" fill={`url(#${id}-plastic)`} />
         <path d="M70 86 A46 46 0 0 1 162 86" fill="none" stroke="#8d877c" strokeWidth="8" strokeLinecap="round" />
         <path d="M70 86 A46 46 0 0 1 128 46" fill="none" stroke="#f0b429" strokeWidth="8" strokeLinecap="round" />
+        <g className="art-needle">
+          <line x1="116" y1="86" x2="132" y2="58" stroke="#1a1408" strokeWidth="3" strokeLinecap="round" />
+        </g>
         <circle cx="230" cy="66" r="32" fill={`url(#${id}-gold)`} />
         <text x="214" y="71" fill="#1a1408" fontSize="14" fontFamily="sans-serif">
           20

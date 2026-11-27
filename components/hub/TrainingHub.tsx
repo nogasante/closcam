@@ -3,12 +3,14 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useSyncExternalStore } from "react";
+import { motion, useReducedMotion } from "framer-motion";
 import { Flame, Star } from "lucide-react";
 import type { DrillSummary } from "@/lib/scenarios";
 import { useConsent, useExtras, useMounted, useProgress } from "@/lib/storage";
 import { PageShell } from "@/components/PageShell";
 import { SiteFooter } from "@/components/SiteHeader";
 import { RoomArt } from "@/components/phone/RoomArt";
+import { CountUp } from "@/components/motion/CountUp";
 
 const RANKS = [
   { xp: 0, name: "New" },
@@ -39,6 +41,9 @@ export function TrainingHub({ drills }: { drills: DrillSummary[] }) {
   const rank = [...RANKS].reverse().find((item) => xp >= item.xp)?.name ?? "New";
   const nextRank = RANKS.find((item) => item.xp > xp);
   const streak = streakOf(progress.results);
+  const reduce = useReducedMotion();
+  const nextId = drills.find((drill) => !progress.results[drill.id])?.id ?? null;
+  const ring = (cleared / drills.length) * 100;
 
   if (!mounted || !consent) {
     return (
@@ -54,23 +59,31 @@ export function TrainingHub({ drills }: { drills: DrillSummary[] }) {
       action={
         <p className="flex items-center gap-3 text-sm font-bold">
           <Flame size={16} className="text-danger" aria-hidden="true" />
-          {streak}
+          <CountUp to={streak} duration={500} />
           <Star size={16} className="text-green" aria-hidden="true" />
-          {xp} XP
+          <CountUp to={xp} /> XP
         </p>
       }
     >
       <RankToast rank={rank} xp={xp} mounted={mounted} />
       <div className="lift px-4 py-5 sm:px-5">
-        <div className="flex flex-wrap items-end justify-between gap-3">
-          <h1 className="text-3xl font-extrabold">Walk it before you pay.</h1>
+        <div className="flex items-end justify-between gap-3">
+          <div className="flex items-center gap-3">
+            <Ring value={ring} label={`${cleared}`} />
+            <h1 className="text-3xl font-extrabold">Walk it before you pay.</h1>
+          </div>
           <p className="text-sm text-muted">
             {rank}
             {nextRank ? ` · ${nextRank.xp - xp} XP to ${nextRank.name}` : ""}
           </p>
         </div>
-        <div className="mt-4 h-2 overflow-hidden rounded-full bg-[#0e1626]">
-          <div className="h-full bg-safe" style={{ width: `${Math.min(100, (xp / 1000) * 100)}%` }} />
+        <div className="hw-track mt-4" aria-hidden="true">
+          <motion.div
+            className="hw-fill"
+            initial={reduce ? false : { width: 0 }}
+            animate={{ width: `${Math.min(100, (xp / 1000) * 100)}%` }}
+            transition={{ duration: reduce ? 0 : 0.7, ease: [0.2, 0.8, 0.2, 1] }}
+          />
         </div>
         <p className="mt-2 text-sm text-muted">
           {cleared} of {drills.length} rooms answered · {correct} first-try correct
@@ -81,17 +94,30 @@ export function TrainingHub({ drills }: { drills: DrillSummary[] }) {
       <ul className="mt-6 grid gap-4 sm:grid-cols-2">
         {drills.map((drill) => {
           const done = progress.results[drill.id];
+          const state = done ? (done.correct ? "Met" : "Missed") : drill.id === nextId ? "Next" : "Later";
+          const open = Boolean(done) || drill.id === nextId;
+          const body = (
+            <>
+              <div className="relative h-40 w-full overflow-hidden">
+                <RoomArt id={drill.id} />
+              </div>
+              <div className="flex items-baseline justify-between gap-3 px-4 py-3">
+                <p className="text-lg font-extrabold">{drill.title}</p>
+                <p className="shrink-0 text-sm text-muted">{state}</p>
+              </div>
+            </>
+          );
           return (
             <li key={drill.id}>
-              <Link href={`/drills/${drill.id}`} className="room-card lift block overflow-hidden">
-                <RoomArt id={drill.id} />
-                <div className="flex items-baseline justify-between gap-3 px-4 py-3">
-                  <p className="text-lg font-extrabold">{drill.title}</p>
-                  <p className="shrink-0 text-sm text-muted">
-                    {done ? (done.correct ? "Met" : "Missed") : drill.headline ? "Start" : drill.difficulty}
-                  </p>
+              {open ? (
+                <Link href={`/drills/${drill.id}`} className={`room-card lift block overflow-hidden ${state === "Next" ? "room-next" : ""}`}>
+                  {body}
+                </Link>
+              ) : (
+                <div className="room-card lift block overflow-hidden" aria-disabled="true">
+                  {body}
                 </div>
-              </Link>
+              )}
             </li>
           );
         })}
@@ -140,6 +166,30 @@ function RankToast({ rank, xp, mounted }: { rank: string; xp: number; mounted: b
     <p className="mb-4 rounded-xl bg-green px-4 py-3 text-sm font-extrabold text-[#1a1408]">
       New rank: {message}
     </p>
+  );
+}
+
+function Ring({ value, label }: { value: number; label: string }) {
+  const radius = 16;
+  const turn = 2 * Math.PI * radius;
+  return (
+    <svg width="44" height="44" viewBox="0 0 44 44" aria-hidden="true">
+      <circle cx="22" cy="22" r={radius} fill="none" stroke="#12161b" strokeWidth="4" />
+      <circle
+        cx="22"
+        cy="22"
+        r={radius}
+        fill="none"
+        stroke="#3dce7c"
+        strokeWidth="4"
+        strokeLinecap="round"
+        strokeDasharray={`${(value / 100) * turn} ${turn}`}
+        transform="rotate(-90 22 22)"
+      />
+      <text x="22" y="26" textAnchor="middle" fontSize="12" fill="#f7f4ee">
+        {label}
+      </text>
+    </svg>
   );
 }
 

@@ -1,6 +1,8 @@
 "use client";
 
 import Link from "next/link";
+import { motion, useReducedMotion } from "framer-motion";
+import { Check } from "lucide-react";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SimulationBanner } from "@/components/PageShell";
 
@@ -31,6 +33,8 @@ export function ConsoleFrame({
   children: React.ReactNode;
   phoneMode?: boolean;
 }) {
+  const reduce = useReducedMotion();
+  const seconds = Math.max(0, Math.round((pressureLeft / 100) * 45));
   const panel = (
     <div className="grid gap-8">
       <div>
@@ -38,19 +42,31 @@ export function ConsoleFrame({
         <h1 className="mt-1 text-[28px] leading-tight font-extrabold">{title}</h1>
         <p className="mt-4 text-[16px] leading-relaxed text-muted">{brief}</p>
         <p className="mt-4 text-[16px]">{objective}</p>
-        <div className="pressure mt-6" aria-label={pressureLabel}>
-          <span style={{ width: `${Math.max(0, Math.min(100, pressureLeft))}%` }} />
+        <div className="mt-6 flex items-center gap-3">
+          <div className="hw-track flex-1" aria-label={pressureLabel}>
+            <span className="hw-fill block" style={{ width: `${Math.max(0, Math.min(100, pressureLeft))}%` }} />
+          </div>
+          <p className="mono text-sm">{seconds}s</p>
         </div>
       </div>
       {flags.length > 0 ? (
         <ul className="grid gap-3">
           {flags.map((flag, index) => (
-            <li key={`${flag.label}-${index}`} className="text-sm text-muted">
-              {flag.detail}
-            </li>
+            <motion.li
+              key={`${flag.label}-${index}`}
+              className="flex items-start gap-2 text-sm"
+              initial={reduce ? false : { opacity: 0, x: -8 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.25 }}
+            >
+              <Check size={16} className="mt-0.5 shrink-0 text-safe" aria-hidden="true" />
+              <span>{flag.detail}</span>
+            </motion.li>
           ))}
         </ul>
-      ) : null}
+      ) : (
+        <p className="text-sm text-muted">Flags appear here as the room plays.</p>
+      )}
       <p className="text-sm text-muted">{progress}</p>
     </div>
   );

@@ -5,7 +5,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import { scanFlags } from "@/lib/flags";
 import { getRoom, TRAINING_BALANCE, type Follow, type Incoming, type Room } from "@/lib/live/rooms";
-import { blip, lossTone } from "@/lib/live/sound";
+import { blip, lossTone, markTone } from "@/lib/live/sound";
 import { nextScenarioId } from "@/lib/scenarios";
 import { shuffleChoices } from "@/lib/shuffle";
 import { recordFirstTry, useProgress } from "@/lib/storage";
@@ -56,6 +56,7 @@ function RoomPlay({ room, scenario }: { room: Room; scenario: Scenario }) {
   const [seconds, setSeconds] = useState(45);
   const [draft, setDraft] = useState("");
   const [answered, setAnswered] = useState(false);
+  const [shake, setShake] = useState(false);
   const [infoOpen, setInfoOpen] = useState(false);
   const [smsOpen, setSmsOpen] = useState(false);
   const [headsUp, setHeadsUp] = useState(false);
@@ -89,7 +90,7 @@ function RoomPlay({ room, scenario }: { room: Room; scenario: Scenario }) {
   useEffect(() => {
     if (phase !== "incoming") return;
     if (shown >= room.incoming.length) return;
-    const wait = reduce ? 0 : room.incoming[shown]?.kind === "sms" ? 700 : 480;
+    const wait = reduce ? 0 : room.incoming[shown]?.kind === "sms" ? 1400 : 1100;
     const timer = window.setTimeout(() => {
       blip();
       if (!reduce && navigator.vibrate) navigator.vibrate(12);
@@ -111,7 +112,7 @@ function RoomPlay({ room, scenario }: { room: Room; scenario: Scenario }) {
     if (followShown >= queue.length) return;
     const event = queue[followShown];
     if (!event) return;
-    const wait = reduce ? 0 : 420;
+    const wait = reduce ? 0 : event.kind === "chat" ? 900 : 700;
     const timer = window.setTimeout(() => {
       if (event.kind === "balance") {
         setBalance((value) => value + event.delta);
@@ -172,6 +173,14 @@ function RoomPlay({ room, scenario }: { room: Room; scenario: Scenario }) {
     const next = room.options.find((item) => item.id === id);
     if (!next) return;
     if (!progress.results[room.id]) recordFirstTry(room.id, next.correct);
+    if (next.correct) {
+      markTone();
+    } else {
+      lossTone();
+      if (!reduce && navigator.vibrate) navigator.vibrate([18, 40, 18]);
+      setShake(true);
+      window.setTimeout(() => setShake(false), 420);
+    }
     setAnswered(true);
     setPicked(id);
     setFollowShown(0);
@@ -202,6 +211,7 @@ function RoomPlay({ room, scenario }: { room: Room; scenario: Scenario }) {
 
   const nextId = nextScenarioId(room.id);
   const immersive = room.surface === "chat" || room.surface === "sms";
+  const followQueue = playingAfter ? afterSite : beforeSite;
 
   return (
     <ConsoleFrame
@@ -216,7 +226,7 @@ function RoomPlay({ room, scenario }: { room: Room; scenario: Scenario }) {
       progress={`${cleared} of 10 rooms have a first answer. This room ${progress.results[room.id] ? "is recorded" : "is open"}.`}
       action={<LeaveLink />}
     >
-      <div className={`device flex flex-col ${immersive ? "min-h-dvh lg:min-h-[680px]" : "min-h-[calc(100dvh-132px)]"} ${hit ? "ring-2 ring-danger" : ""}`}>
+      <div className={`device flex flex-col ${immersive ? "min-h-dvh lg:min-h-[680px]" : "min-h-[calc(100dvh-132px)]"} ${hit ? "ring-2 ring-danger" : ""} ${shake ? "shake" : ""}`}>
         <div className="device-screen chat-wall relative min-h-0 flex-1">
           <StatusBar />
           <p className="pointer-events-none absolute top-1 left-1/2 z-20 -translate-x-1/2 rounded-full bg-black/45 px-2 py-0.5 text-[10px] font-semibold tracking-wide text-white/80">
@@ -286,6 +296,7 @@ function RoomPlay({ room, scenario }: { room: Room; scenario: Scenario }) {
               <Message key={`in-${index}`} line={line} />
             ))}
             {phase === "incoming" && shown < room.incoming.length ? <Typing /> : null}
+            {phase === "follow" && !playingSite && followQueue[followShown]?.kind === "chat" ? <Typing /> : null}
             {trail.map((event, index) => (
               <FollowView key={`f-${index}`} event={event} />
             ))}
@@ -486,9 +497,15 @@ function Debrief({
   already: boolean;
   lines: string[];
 }) {
+  const reduce = useReducedMotion();
   return (
-    <div className="grid gap-3">
-      <p className="text-[13px] tracking-wide text-muted uppercase">{correct ? "Objective met" : "Objective missed"}</p>
+    <motion.div
+      className="lift grid gap-3 px-3 py-3"
+      initial={reduce ? false : { opacity: 0, y: 16 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: reduce ? 0 : 0.28 }}
+    >
+      <p className="text-lg font-extrabold">{correct ? "Objective met" : "Objective missed"}</p>
       <p className="lesson">{scenario.lesson}</p>
       {lines.length > 0 ? (
         <div className="grid gap-2">
@@ -536,6 +553,6 @@ function Debrief({
         </Link>
       </div>
       <ReportStrip />
-    </div>
+    </motion.div>
   );
 }
