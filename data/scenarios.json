@@ -4,11 +4,11 @@
     {
       "id": "s01-data-payment-link",
       "number": 1,
-      "title": "The cheap data payment link",
+      "title": "The cheap data seller",
       "headline": true,
       "difficulty": "medium",
       "surfaces": ["chat", "payment_page"],
-      "setup": "A seller you do not know has messaged you on chat about cheap data. You have not bought from them before.",
+      "setup": "A seller you do not know offers cheap data. They want the money sent to their number first. The redeem page comes after.",
       "steps": [
         {
           "type": "chat",
@@ -17,55 +17,55 @@
             {
               "sender": "SwiftBundle",
               "time": "Today, 14:03",
-              "text": "Hi. We have 20GB for only GHS 15. Official price is much higher. Pay now and it hits your number in 2 minutes."
+              "text": "Hi. 20GB for only GHS 15. Official price is much higher. Send the GHS 15 to 055 441 9088 first. When it lands I will send the redeem link."
             },
             {
               "sender": "SwiftBundle",
               "time": "Today, 14:03",
-              "text": "Tap this PulsePay request and approve. I have already entered the amount. pay-swiftbundle.online/request/15"
+              "text": "Do it now. I do not take a payment link. The money has to hit my number before I release the bundle."
             }
           ]
         },
         {
           "type": "payment_page",
-          "url": "pay-swiftbundle.online/request/15",
-          "title": "PulsePay payment request",
-          "merchant": "SWIFT BUNDLE DEALS",
-          "amount": "GHS 15.00",
-          "buttonLabel": "Approve and enter PIN",
+          "url": "redeem-swiftbundle.online/bundle",
+          "title": "Activate bundle",
+          "merchant": "SWIFTBUNDLE REDEEM",
+          "amount": "GHS 15.00 already sent",
+          "buttonLabel": "Enter PIN to activate",
           "finePrint": "Powered by PulsePay"
         }
       ],
       "choices": [
         {
           "id": "a",
-          "text": "Approve the request and enter my PIN so the data can load.",
+          "text": "Send GHS 15 to 055 441 9088.",
           "correct": false
         },
         {
           "id": "b",
-          "text": "Close the page, ignore the chat, and buy data only from my network's official menu or official app.",
+          "text": "Do not send. Buy data from the official menu.",
           "correct": true
         },
         {
           "id": "c",
-          "text": "Ask the seller to cut the price to GHS 10, then approve the new request.",
+          "text": "Ask for GHS 10, then send that.",
           "correct": false
         },
         {
           "id": "d",
-          "text": "Send the link to a friend so they can try the deal first.",
+          "text": "Forward the number so a friend can try it.",
           "correct": false
         }
       ],
       "redFlags": [
         "The price is far below a normal data price.",
         "The seller is unknown and messaged you first.",
-        "The link is not your official provider app or official USSD menu.",
-        "The seller set the amount and is asking you to approve a payment request, which sends your money to them.",
-        "The fake page asks you to enter a PIN."
+        "They want the money sent to a personal number before anything is delivered.",
+        "The redeem site is not your network menu, and it asks for a PIN.",
+        "After payment, the seller can block you and the bundle never arrives."
       ],
-      "lesson": "If a stranger sends a payment link for a cheap deal, you are approving their price, not buying from your network.",
+      "lesson": "Cheap data that starts with you sending money is the scam. The link comes after they have the cash.",
       "sources": [
         {
           "name": "CSA, Online shopping scam, Black Friday deals, 28 November 2025",
@@ -92,7 +92,7 @@
       "headline": true,
       "difficulty": "medium",
       "surfaces": ["chat"],
-      "setup": "A chat arrives from Kofi, a friend already in your contacts. The profile photo looks like him.",
+      "setup": "This is Kofi's existing chat, with yesterday's messages. He is not writing from a new number. The wallet he names is not the line you save for him.",
       "steps": [
         {
           "type": "chat",
@@ -101,12 +101,12 @@
             {
               "sender": "Kofi",
               "time": "Today, 21:17",
-              "text": "Bro, please I need help. My line is having issues so I am texting from this WhatsApp only."
+              "text": "Bro I am stuck. My PulsePay wallet is empty and this line has a problem."
             },
             {
               "sender": "Kofi",
               "time": "Today, 21:17",
-              "text": "I need GHS 800 now for an emergency at the hospital. Please send it to this number, 055 111 4488. I will pay you back tomorrow. Don't call, my airtime is finished."
+              "text": "Please send GHS 800 to this other number, 055 111 4488. I will pay you back tomorrow. Do not call, the line is not going through."
             }
           ]
         }
@@ -134,13 +134,12 @@
         }
       ],
       "redFlags": [
-        "Urgent money request, late at night, with pressure not to call.",
-        "A new number that is not the one you already associate with Kofi.",
-        "\"Don't call\" is a common way to stop you checking.",
-        "A real friend's account can still be in a scammer's hands after a takeover.",
-        "Official advice is to verify through a different channel, not through the same chat."
+        "The message is in the existing chat, with Kofi's name. That is not proof it is him.",
+        "He tells you not to call.",
+        "055 111 4488 is not the saved line 024 318 2201, and the prefix is different.",
+        "A takeover starts when someone forwards a registration code. The attacker then asks that person's contacts for money."
       ],
-      "lesson": "A message from a friend's WhatsApp is not proof it is your friend. Confirm by calling or seeing them another way before you send money.",
+      "lesson": "Kofi's chat can be in someone else's hands. Call the line you already save for him before you send money to a different number.",
       "sources": [
         {
           "name": "CSA, Surge in WhatsApp Account Takeovers, 29 May 2024",
@@ -163,29 +162,29 @@
       "headline": false,
       "difficulty": "easy",
       "surfaces": ["chat", "sms"],
-      "setup": "Someone in a group you belong to, who says they are the group admin, has messaged you privately.",
+      "setup": "Ama is already in your chats. She asks you to vote, and to return a code she says she sent. The text that arrives is a WhatsApp registration SMS in Chinese, because registration was started on a phone set to Chinese.",
       "steps": [
         {
           "type": "chat",
-          "contact": "Group Admin (Ama)",
+          "contact": "Ama",
           "messages": [
             {
               "sender": "Ama",
               "time": "Today",
-              "text": "Hi, we are upgrading the group today. WhatsApp will send you a 6-digit code now. Please send me the code so I can add you to the new group. If you don't, you will be removed tonight."
+              "text": "Hi. Please help me vote on my link. I sent a code to your number by mistake. Send it to me. Thanks."
             }
           ]
         },
         {
           "type": "sms_preview",
-          "sender": "WhatsApp",
-          "text": "Your WhatsApp code is 382 194. Do not share this code."
+          "sender": "Text message",
+          "text": "【WhatsApp】你的验证码是 382-194，请勿告诉他人。"
         }
       ],
       "choices": [
         {
           "id": "a",
-          "text": "Send 382 194 to Ama so I am not removed from the group.",
+          "text": "Send the code to Ama.",
           "correct": false
         },
         {
@@ -205,12 +204,12 @@
         }
       ],
       "redFlags": [
-        "Nobody who is a real group admin needs your WhatsApp code.",
-        "Urgency and a threat of being removed.",
-        "The official WhatsApp SMS itself says not to share the code.",
-        "Sharing the code can hand your account to someone else, who can then message your family for money."
+        "A saved contact is asking for a code. Voting does not need your registration code.",
+        "The text is in a language you do not read. The warning not to share is in that language.",
+        "The scammer started WhatsApp registration on a phone set to Chinese, so the SMS arrived in Chinese.",
+        "Forwarding the code lets them open your account and ask your contacts for money."
       ],
-      "lesson": "Your WhatsApp code is a key to your account. Never share it, not even with a friend or a group admin.",
+      "lesson": "That text was a WhatsApp registration code. Forwarding it gives away the account, even when you cannot read the warning.",
       "sources": [
         {
           "name": "CSA, Surge in WhatsApp Account Takeovers, 29 May 2024",

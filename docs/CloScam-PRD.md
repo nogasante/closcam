@@ -150,9 +150,9 @@ No accounts, no analytics SDKs that identify people, no real PIN input fields, n
 
 The full scripts, choices, red flags, lessons and sources for all 10 drills live in /workspace/closcam/scenarios.md. Summary:
 
-1. The cheap data payment link (headline, medium): WhatsApp plus fake payment page. Seller sends a link with the amount already set. Correct: close it and buy data from official channels.
-2. The hijacked WhatsApp (headline, medium): a "friend" asks for urgent money and says not to call. Correct: confirm by another channel.
-3. The verification code trap (easy): a "group admin" asks for the 6-digit WhatsApp code. Correct: never share it, turn on two-step verification.
+1. The cheap data seller (headline, medium): chat, then a redeem site. The seller asks you to send the money to their number first. The link comes after and asks for a PIN, or the bundle never arrives. Correct: do not send, buy data from official channels.
+2. The hijacked WhatsApp (headline, medium): the ask arrives in an existing chat with a saved contact, not from a new number. The wallet number is different from the line you already save for them. Correct: call that saved line before you send money.
+3. The verification code trap (easy): route B. A saved contact asks you to vote or to return a code. The SMS is a WhatsApp registration code in Chinese, because registration was started on a phone set to Chinese. Correct: do not forward it. Route A, a fictional PulseLink security call that asks you to read the same kind of code, is the live call. After either route, the attacker uses the account to ask your contacts for money. A short protection exercise covers two-step verification, foreign-language codes, calling the saved line, and recovery.
 4. The prize call (easy): prize plus a fee or a PIN request. Correct: hang up.
 5. Fake customer care wants your PIN (medium): wallet will be "blocked". Correct: hang up and use official care only.
 6. "Upgrade your wallet limit" (easy): fee plus PIN or OTP. Correct: it is a scam, no fee, no PIN.

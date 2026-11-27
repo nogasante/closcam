@@ -53,37 +53,37 @@ Scenarios 1 and 2 are the headline drills. Scenario 3 teaches the method that ma
 
 ---
 
-### Scenario 1. The cheap data payment link (headline)
+### Scenario 1. The cheap data seller (headline)
 
 Difficulty: Medium
-Surface: WhatsApp-style chat, then a fake payment web page
-Why it is here: This is one of the two drills requested by the project owner. It trains self-awareness around a seller-controlled payment link or fake checkout.
+Surface: WhatsApp-style chat, then a fake redeem page
+Why it is here: This is one of the two drills requested by the project owner. In the real pattern the seller does not send a pre-filled payment link. They get the money sent to their number first. The site comes after.
 
-Setup shown to the user: "A seller you do not know has messaged you on chat about cheap data. You have not bought from them before."
+Setup shown to the user: "A seller you do not know offers cheap data. They want the money sent to their number first. The redeem page comes after."
 
-Fake WhatsApp-style messages (all under the SIMULATION banner). Sender name: SwiftBundle. Timestamp: today, 14:03.
+Fake chat, under the SIMULATION banner. Sender: SwiftBundle. Timestamp: today, 14:03.
 
-SwiftBundle: "Hi. We have 20GB for only GHS 15. Official price is much higher. Pay now and it hits your number in 2 minutes."
+SwiftBundle: "Hi. 20GB for only GHS 15. Official price is much higher. Send the GHS 15 to 055 441 9088 first. When it lands I will send the redeem link."
 
-SwiftBundle: "Tap this PulsePay request and approve. I have already entered the amount. pay-swiftbundle.online/request/15"
+SwiftBundle: "Do it now. I do not take a payment link. The money has to hit my number before I release the bundle."
 
-The fake page then opens inside the app, still under the SIMULATION banner. Page title: "PulsePay payment request". Merchant line: "SWIFT BUNDLE DEALS". Amount: "GHS 15.00". Button: "Approve and enter PIN". Small print: "Powered by PulsePay" (fictional). The page URL bar shows: pay-swiftbundle.online/request/15 (not an official provider domain).
+If the learner sends the money, the balance drops, then SwiftBundle sends redeem-swiftbundle.online/bundle. That page asks for a PulsePay number and PIN to activate. The seller then blocks them and the bundle never arrives. Small print: "Powered by PulsePay" (fictional).
 
 Choices (one is correct):
 
-A. Approve the request and enter my PIN so the data can load. (Wrong)
-B. Close the page, ignore the chat, and buy data only from my network's official menu or official app. (Correct)
-C. Ask the seller to cut the price to GHS 10, then approve the new request. (Wrong)
-D. Send the link to a friend so they can try the deal first. (Wrong)
+A. Send GHS 15 to 055 441 9088. (Wrong)
+B. Do not send. Buy data from the official menu. (Correct)
+C. Ask for GHS 10, then send that. (Wrong)
+D. Forward the number so a friend can try it. (Wrong)
 
 Red flags to highlight after the answer:
 - The price is far below a normal data price.
 - The seller is unknown and messaged you first.
-- The link is not your official provider app or official USSD menu.
-- The seller set the amount and is asking you to approve a payment request, which sends your money to them.
-- The fake page asks you to enter a PIN.
+- They want the money sent to a personal number before anything is delivered.
+- The redeem site is not your network menu, and it asks for a PIN.
+- After payment, the seller can block you and the bundle never arrives.
 
-One-line lesson: If a stranger sends a payment link for a cheap deal, you are approving their price, not buying from your network.
+One-line lesson: Cheap data that starts with you sending money is the scam. The link comes after they have the cash.
 
 Official advice sources: CSA Black Friday shopping alert, 28 November 2025 (fake shops, advance payments to wallets that do not bear the shop name, phishing links to fraudulent sites), https://csa.gov.gh/cert-gh-alert41.php. CSA business impersonation alert, 30 April 2026 (payment requests and forms that ask for a mobile money PIN), https://www.csa.gov.gh/cert-gh-alert44.php. MTN Ghana scam alert, 11 May 2026 (do not click unknown links, use official apps or sites, they will not ask for a PIN via a text link or social message), https://mtn.com.gh/newsabout/scam-alert-protect-your-personal-information/. Bank of Ghana, 7 October 2026 (no legitimate operator will request your PIN, password or OTP by call, text, email or social media).
 
@@ -95,13 +95,15 @@ Difficulty: Medium
 Surface: WhatsApp-style chat
 Why it is here: This is the second drill requested by the project owner. Official CSA alerts say that once a WhatsApp account is taken over, the attackers "impersonate the victims and defraud their contacts."
 
-Setup shown to the user: "A chat arrives from Kofi, a friend already in your contacts. The profile photo looks like him."
+Setup shown to the user: "This is Kofi's existing chat, with yesterday's messages. He is not writing from a new number. The wallet he names is not the line you save for him."
 
-Fake WhatsApp-style messages. Sender: Kofi. Timestamp: today, 21:17.
+The thread already contains ordinary history. Saved line shown in the header: 024 318 2201. New messages, today, 21:17.
 
-Kofi: "Bro, please I need help. My line is having issues so I am texting from this WhatsApp only."
+Kofi: "Bro I am stuck. My PulsePay wallet is empty and this line has a problem."
 
-Kofi: "I need GHS 800 now for an emergency at the hospital. Please send it to this number, 055 111 4488. I will pay you back tomorrow. Don't call, my airtime is finished."
+Kofi: "Please send GHS 800 to this other number, 055 111 4488. I will pay you back tomorrow. Do not call, the line is not going through."
+
+055 is a different prefix from 024. The drill does not claim that a named real network is the one scammers use. It only shows that the number is not the saved line.
 
 Choices:
 
@@ -111,13 +113,12 @@ C. Reply with my PulsePay PIN so he can pull the money himself and pay me back l
 D. Send GHS 200 first as a test, then send the rest if he says thanks. (Wrong)
 
 Red flags:
-- Urgent money request, late at night, with pressure not to call.
-- A new number that is not the one you already associate with Kofi.
-- "Don't call" is a common way to stop you checking.
-- A real friend's account can still be in a scammer's hands after a takeover.
-- Official advice is to verify through a different channel, not through the same chat.
+- The message is in the existing chat, with Kofi's name. That is not proof it is him.
+- He tells you not to call.
+- 055 111 4488 is not the saved line 024 318 2201, and the prefix is different.
+- A takeover starts when someone forwards a registration code. The attacker then asks that person's contacts for money.
 
-One-line lesson: A message from a friend's WhatsApp is not proof it is your friend. Confirm by calling or seeing them another way before you send money.
+One-line lesson: Kofi's chat can be in someone else's hands. Call the line you already save for him before you send money to a different number.
 
 Official advice sources: CSA, 29 May 2024, 187 reports as of April 2024, attackers "impersonate the victims and defraud their contacts", https://www.csa.gov.gh/cert-gh-alert27.php. CSA, 31 October 2023, verify unexpected requests "through a different communication mode/platform", https://www.csa.gov.gh/cert-gh-alert21.php. WhatsApp Help: if an account is compromised, "notify family and friends as this person could impersonate you in chats and groups", https://faq.whatsapp.com/1131652977717250.
 
@@ -127,30 +128,36 @@ Official advice sources: CSA, 29 May 2024, 187 reports as of April 2024, attacke
 
 Difficulty: Easy
 Surface: WhatsApp-style chat, with a simulated SMS preview (the SMS is also marked SIMULATION and is not a real code)
-Why it is here: This is how WhatsApp takeovers usually start. It belongs next to scenario 2 so users learn both sides: do not give out your code, and do not trust a hijacked chat.
+Why it is here: This is route B, one of the two ways a takeover starts. Route A is the live call, where a fictional PulseLink security caller asks you to read back a code. Route B is this room: an already hijacked friend asks you to send a code. After either route the attacker uses the account to ask your contacts for money (scenario 2).
 
-Setup: "Someone in a group you belong to, who says they are the group admin, has messaged you privately."
+Setup: "Ama is already in your chats. She asks you to vote, and to return a code she says she sent. The text that arrives is a WhatsApp registration SMS in Chinese, because registration was started on a phone set to Chinese."
 
-Fake chat. Sender: Group Admin (Ama).
+The thread already has ordinary history with Ama. New message:
 
-Ama: "Hi, we are upgrading the group today. WhatsApp will send you a 6-digit code now. Please send me the code so I can add you to the new group. If you don't, you will be removed tonight."
+Ama: "Hi. Please help me vote on my link. I sent a code to your number by mistake. Send it to me. Thanks."
 
-A simulated SMS then appears in a small preview: "Your WhatsApp code is 382 194. Do not share this code." (This is a fake number for the drill. The app must never display a real code from the user's phone, and the user must never be asked to type one.)
+The same ask also shows up as "help me verify" or "I sent a code to your number by mistake."
+
+A simulated SMS then appears. It is not in English, so the learner does not see the warning while they decide:
+
+【WhatsApp】你的验证码是 382-194，请勿告诉他人。
+
+Debrief translation: "[WhatsApp] Your verification code is 382-194. Do not tell anyone else." The reason: the scammer started registration on a phone set to Chinese, so WhatsApp sent the SMS in that phone's language. This is a fixed fake code for the drill. The app must never display a real code from the user's phone, and it must not store a code the learner types.
 
 Choices:
 
-A. Send 382 194 to Ama so I am not removed from the group. (Wrong)
+A. Send the code to Ama. (Wrong)
 B. Ignore the request and never share a WhatsApp code with anyone. Turn on two-step verification. (Correct)
 C. Send only the first three digits, to be careful. (Wrong)
 D. Ask Ama to send her code first, then I will send mine. (Wrong)
 
 Red flags:
-- Nobody who is a real group admin needs your WhatsApp code.
-- Urgency and a threat of being removed.
-- The official WhatsApp SMS itself says not to share the code.
-- Sharing the code can hand your account to someone else, who can then message your family for money (see scenario 2).
+- A saved contact is asking for a code. Voting does not need your registration code.
+- The text is in a language you do not read. The warning not to share is in that language.
+- The scammer started WhatsApp registration on a phone set to Chinese, so the SMS arrived in Chinese.
+- Forwarding the code lets them open your account and ask your contacts for money (see scenario 2).
 
-One-line lesson: Your WhatsApp code is a key to your account. Never share it, not even with a friend or a group admin.
+One-line lesson: That text was a WhatsApp registration code. Forwarding it gives away the account, even when you cannot read the warning.
 
 Official advice sources: CSA, 29 May 2024, "Never Share Verification Codes: Treat your verification code like a password; share it with no one", plus two-step verification steps, https://www.csa.gov.gh/cert-gh-alert27.php. WhatsApp Help: "you should never share your WhatsApp verification code with others", https://faq.whatsapp.com/479314433984258. WhatsApp Help: "You should never share your registration code with others, not even friends or family", https://faq.whatsapp.com/1131652977717250. Two-step verification: https://faq.whatsapp.com/506595211487528.
 
