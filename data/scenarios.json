@@ -1,0 +1,705 @@
+{
+  "version": 1,
+  "scenarios": [
+    {
+      "id": "s01-data-payment-link",
+      "number": 1,
+      "title": "The cheap data seller",
+      "headline": true,
+      "difficulty": "medium",
+      "surfaces": ["chat", "payment_page"],
+      "setup": "A seller you do not know offers cheap data. They want the money sent to their number first. The redeem page comes after.",
+      "steps": [
+        {
+          "type": "chat",
+          "contact": "SwiftBundle",
+          "messages": [
+            {
+              "sender": "SwiftBundle",
+              "time": "Today, 14:03",
+              "text": "Hi. 20GB for only GHS 15. Official price is much higher. Send the GHS 15 to 055 441 9088 first. When it lands I will send the redeem link."
+            },
+            {
+              "sender": "SwiftBundle",
+              "time": "Today, 14:03",
+              "text": "Do it now. I do not take a payment link. The money has to hit my number before I release the bundle."
+            }
+          ]
+        },
+        {
+          "type": "payment_page",
+          "url": "redeem-swiftbundle.online/bundle",
+          "title": "Activate bundle",
+          "merchant": "SWIFTBUNDLE REDEEM",
+          "amount": "GHS 15.00 already sent",
+          "buttonLabel": "Enter PIN to activate",
+          "finePrint": "Powered by PulsePay"
+        }
+      ],
+      "choices": [
+        {
+          "id": "a",
+          "text": "Send GHS 15 to 055 441 9088.",
+          "correct": false
+        },
+        {
+          "id": "b",
+          "text": "Do not send. Buy data from the official menu.",
+          "correct": true
+        },
+        {
+          "id": "c",
+          "text": "Ask for GHS 10, then send that.",
+          "correct": false
+        },
+        {
+          "id": "d",
+          "text": "Forward the number so a friend can try it.",
+          "correct": false
+        }
+      ],
+      "redFlags": [
+        "The price is far below a normal data price.",
+        "The seller is unknown and messaged you first.",
+        "They want the money sent to a personal number before anything is delivered.",
+        "The redeem site is not your network menu, and it asks for a PIN.",
+        "After payment, the seller can block you and the bundle never arrives."
+      ],
+      "lesson": "Cheap data that starts with you sending money is the scam.",
+      "sources": [
+        {
+          "name": "CSA, Online shopping scam, Black Friday deals, 28 November 2025",
+          "url": "https://csa.gov.gh/cert-gh-alert41.php"
+        },
+        {
+          "name": "CSA, Fraudulent Online Business Impersonation Schemes, 30 April 2026",
+          "url": "https://www.csa.gov.gh/cert-gh-alert44.php"
+        },
+        {
+          "name": "MTN Ghana, SCAM ALERT: Protect Your Personal Information, 11 May 2026",
+          "url": "https://mtn.com.gh/newsabout/scam-alert-protect-your-personal-information/"
+        },
+        {
+          "name": "Bank of Ghana, Digital Fraud and the Cost of Ignorance, 7 October 2026",
+          "url": "https://www.bog.gov.gh/wp-content/uploads/2026/10/PRESS-RELEASE-DIGITAL-FRAUD-AND-THE-COST-OF-IGNORANCE-071026.pdf"
+        }
+      ]
+    },
+    {
+      "id": "s02-hijacked-whatsapp",
+      "number": 2,
+      "title": "The hijacked WhatsApp",
+      "headline": true,
+      "difficulty": "medium",
+      "surfaces": ["chat"],
+      "setup": "This is Kofi's existing chat, with yesterday's messages. He is not writing from a new number. The wallet he names is not the line you save for him.",
+      "steps": [
+        {
+          "type": "chat",
+          "contact": "Kofi",
+          "messages": [
+            {
+              "sender": "Kofi",
+              "time": "Today, 21:17",
+              "text": "Bro I am stuck. My PulsePay wallet is empty and this line has a problem."
+            },
+            {
+              "sender": "Kofi",
+              "time": "Today, 21:17",
+              "text": "Please send GHS 800 to this other number, 055 111 4488. I will pay you back tomorrow. Do not call, the line is not going through."
+            }
+          ]
+        }
+      ],
+      "choices": [
+        {
+          "id": "a",
+          "text": "Send the GHS 800 to 055 111 4488 because the chat is coming from Kofi's WhatsApp.",
+          "correct": false
+        },
+        {
+          "id": "b",
+          "text": "Call or visit Kofi using a number or method I already know, and only send money if I confirm it is really him.",
+          "correct": true
+        },
+        {
+          "id": "c",
+          "text": "Reply with my PulsePay PIN so he can pull the money himself and pay me back later.",
+          "correct": false
+        },
+        {
+          "id": "d",
+          "text": "Send GHS 200 first as a test, then send the rest if he says thanks.",
+          "correct": false
+        }
+      ],
+      "redFlags": [
+        "The message is in the existing chat, with Kofi's name. That is not proof it is him.",
+        "He tells you not to call.",
+        "055 111 4488 is not the saved line 024 318 2201, and the prefix is different.",
+        "A takeover starts when someone forwards a registration code. The attacker then asks that person's contacts for money."
+      ],
+      "lesson": "Call the number you already saved before you send money.",
+      "sources": [
+        {
+          "name": "CSA, Surge in WhatsApp Account Takeovers, 29 May 2024",
+          "url": "https://www.csa.gov.gh/cert-gh-alert27.php"
+        },
+        {
+          "name": "CSA, WhatsApp Account Takeover, 31 October 2023",
+          "url": "https://www.csa.gov.gh/cert-gh-alert21.php"
+        },
+        {
+          "name": "WhatsApp Help, How to recover a compromised account",
+          "url": "https://faq.whatsapp.com/1131652977717250"
+        }
+      ]
+    },
+    {
+      "id": "s03-verification-code",
+      "number": 3,
+      "title": "The verification code trap",
+      "headline": false,
+      "difficulty": "easy",
+      "surfaces": ["chat", "sms"],
+      "setup": "Ama is already in your chats. She asks you to vote, and to return a code she says she sent. The text that arrives is a WhatsApp registration SMS in Chinese, because registration was started on a phone set to Chinese.",
+      "steps": [
+        {
+          "type": "chat",
+          "contact": "Ama",
+          "messages": [
+            {
+              "sender": "Ama",
+              "time": "Today",
+              "text": "Hi. Please help me vote on my link. I sent a code to your number by mistake. Send it to me. Thanks."
+            }
+          ]
+        },
+        {
+          "type": "sms_preview",
+          "sender": "Text message",
+          "text": "【WhatsApp】你的验证码是 382-194，请勿告诉他人。"
+        }
+      ],
+      "choices": [
+        {
+          "id": "a",
+          "text": "Send the code to Ama.",
+          "correct": false
+        },
+        {
+          "id": "b",
+          "text": "Ignore the request and never share a WhatsApp code with anyone. Turn on two-step verification.",
+          "correct": true
+        },
+        {
+          "id": "c",
+          "text": "Send only the first three digits, to be careful.",
+          "correct": false
+        },
+        {
+          "id": "d",
+          "text": "Ask Ama to send her code first, then I will send mine.",
+          "correct": false
+        }
+      ],
+      "redFlags": [
+        "A saved contact is asking for a code. Voting does not need your registration code.",
+        "The text is in a language you do not read. The warning not to share is in that language.",
+        "The scammer started WhatsApp registration on a phone set to Chinese, so the SMS arrived in Chinese.",
+        "Forwarding the code lets them open your account and ask your contacts for money."
+      ],
+      "lesson": "Forwarding that registration code gives away the account.",
+      "sources": [
+        {
+          "name": "CSA, Surge in WhatsApp Account Takeovers, 29 May 2024",
+          "url": "https://www.csa.gov.gh/cert-gh-alert27.php"
+        },
+        {
+          "name": "WhatsApp Help, Received verification code without requesting it",
+          "url": "https://faq.whatsapp.com/479314433984258"
+        },
+        {
+          "name": "WhatsApp Help, How to recover a compromised account",
+          "url": "https://faq.whatsapp.com/1131652977717250"
+        },
+        {
+          "name": "WhatsApp Help, Two-step verification",
+          "url": "https://faq.whatsapp.com/506595211487528"
+        }
+      ]
+    },
+    {
+      "id": "s04-prize-call",
+      "number": 4,
+      "title": "The prize call",
+      "headline": false,
+      "difficulty": "easy",
+      "surfaces": ["call"],
+      "setup": "Your phone rings from a number you do not know.",
+      "steps": [
+        {
+          "type": "call",
+          "callerId": "+233 55 200 7781",
+          "callerLabel": "Prize desk",
+          "lines": [
+            "Congratulations! You have won GHS 5,000 and a new phone in our customer promo. To release the prize, send GHS 50 PulsePay to 055 200 7781 as a processing fee, or give me your wallet number and PIN so I can credit you."
+          ]
+        }
+      ],
+      "choices": [
+        {
+          "id": "a",
+          "text": "Send GHS 50 so I can receive the prize.",
+          "correct": false
+        },
+        {
+          "id": "b",
+          "text": "Give my wallet number and PIN so they can credit me directly.",
+          "correct": false
+        },
+        {
+          "id": "c",
+          "text": "Hang up. Do not send money or share a PIN. I did not enter any promo.",
+          "correct": true
+        },
+        {
+          "id": "d",
+          "text": "Ask them to send the prize first, then I will pay the fee.",
+          "correct": false
+        }
+      ],
+      "redFlags": [
+        "A prize you did not enter.",
+        "A request for a fee, a PIN, or your wallet details by phone.",
+        "No legitimate operator will ask for your PIN, password or OTP by phone, text, email or social media.",
+        "Official advice warns about scam calls that ask you to send mobile money to receive a cash prize."
+      ],
+      "lesson": "Real prizes do not start with a stranger asking you to send money or share your PIN.",
+      "sources": [
+        {
+          "name": "CSA, Ways to Avoid Being a Victim of Mobile Money Fraud",
+          "url": "https://www.csa.gov.gh/mobile_money_fraud.php"
+        },
+        {
+          "name": "Bank of Ghana, Digital Fraud and the Cost of Ignorance, 7 October 2026",
+          "url": "https://www.bog.gov.gh/wp-content/uploads/2026/10/PRESS-RELEASE-DIGITAL-FRAUD-AND-THE-COST-OF-IGNORANCE-071026.pdf"
+        },
+        {
+          "name": "MTN Ghana, SCAM ALERT: Protect Your Personal Information, 11 May 2026",
+          "url": "https://mtn.com.gh/newsabout/scam-alert-protect-your-personal-information/"
+        }
+      ]
+    },
+    {
+      "id": "s05-fake-care-pin",
+      "number": 5,
+      "title": "Fake customer care wants your PIN",
+      "headline": false,
+      "difficulty": "medium",
+      "surfaces": ["call"],
+      "setup": "You get a call. The person says they are from PulsePay Care.",
+      "steps": [
+        {
+          "type": "call",
+          "callerId": "+233 24 009 3310",
+          "callerLabel": "PulsePay Care",
+          "lines": [
+            "Good afternoon. I am from PulsePay Care. We see a failed transfer on your wallet. If you do not confirm now, your wallet will be blocked in 10 minutes. Please tell me your PulsePay PIN, or the code we just sent to your phone, so I can unlock it."
+          ]
+        }
+      ],
+      "choices": [
+        {
+          "id": "a",
+          "text": "Tell them the PIN so my wallet is not blocked.",
+          "correct": false
+        },
+        {
+          "id": "b",
+          "text": "Read out the code from my SMS so they can verify me.",
+          "correct": false
+        },
+        {
+          "id": "c",
+          "text": "Hang up. Call or dial only the official care channel I already know. Never give a PIN or code on a call.",
+          "correct": true
+        },
+        {
+          "id": "d",
+          "text": "Ask them to SMS me a link, then enter the PIN on that page.",
+          "correct": false
+        }
+      ],
+      "redFlags": [
+        "Fear and a short deadline (\"blocked in 10 minutes\").",
+        "A request for a PIN or a one-time code by phone.",
+        "Official care will not ask for your PIN or OTP by call, text, email or social media.",
+        "The number may look local. That does not make the caller official."
+      ],
+      "lesson": "A caller who asks for your PIN or a code is not real care.",
+      "sources": [
+        {
+          "name": "Bank of Ghana, Digital Fraud and the Cost of Ignorance, 7 October 2026",
+          "url": "https://www.bog.gov.gh/wp-content/uploads/2026/10/PRESS-RELEASE-DIGITAL-FRAUD-AND-THE-COST-OF-IGNORANCE-071026.pdf"
+        },
+        {
+          "name": "CSA, Ways to Avoid Being a Victim of Mobile Money Fraud",
+          "url": "https://www.csa.gov.gh/mobile_money_fraud.php"
+        },
+        {
+          "name": "MTN Ghana, SCAM ALERT: Protect Your Personal Information, 11 May 2026",
+          "url": "https://mtn.com.gh/newsabout/scam-alert-protect-your-personal-information/"
+        },
+        {
+          "name": "MTN Help Center, How Can I Keep My MoMo Wallet Safe?",
+          "url": "https://help-center.mtn.com.gh/hc/en-us/articles/36643577740690-How-Can-I-Keep-My-MoMo-Wallet-Safe"
+        }
+      ]
+    },
+    {
+      "id": "s06-upgrade-limit",
+      "number": 6,
+      "title": "Upgrade your wallet limit",
+      "headline": false,
+      "difficulty": "easy",
+      "surfaces": ["call", "sms"],
+      "setup": "A caller says they can raise your wallet limit.",
+      "steps": [
+        {
+          "type": "call",
+          "callerId": "Unknown number",
+          "callerLabel": "PulsePay",
+          "lines": [
+            "This is PulsePay. We can upgrade your daily limit today, but only if you pay a small activation fee and confirm your PIN or OTP now. If you wait, the offer expires at midnight."
+          ]
+        },
+        {
+          "type": "sms",
+          "sender": "055 774 2201",
+          "messages": [
+            {
+              "sender": "055 774 2201",
+              "time": "Today",
+              "text": "Pay GHS 20 to complete your limit upgrade. Reply with your PIN if the fee already left your wallet."
+            }
+          ]
+        }
+      ],
+      "choices": [
+        {
+          "id": "a",
+          "text": "Pay the fee and give the PIN or OTP so the limit goes up.",
+          "correct": false
+        },
+        {
+          "id": "b",
+          "text": "This is a scam. Hang up, delete the SMS, and never share a PIN, OTP or fee for an \"upgrade\".",
+          "correct": true
+        },
+        {
+          "id": "c",
+          "text": "Pay the fee but refuse to give the PIN.",
+          "correct": false
+        },
+        {
+          "id": "d",
+          "text": "Share the OTP only, because an OTP is not a PIN.",
+          "correct": false
+        }
+      ],
+      "redFlags": [
+        "Unsolicited \"upgrade\" offer.",
+        "A fee plus a request for PIN or OTP.",
+        "A real operator will not ask for your PIN, OTP or any fee for this."
+      ],
+      "lesson": "Nobody needs your PIN, OTP or a fee to \"upgrade\" your wallet.",
+      "sources": [
+        {
+          "name": "MTN Help Center, Someone called to upgrade my limit. What should I do?, 25 November 2026",
+          "url": "https://help-center.mtn.com.gh/hc/en-us/articles/41113765891218-Someone-called-to-upgrade-my-limit-What-should-I-do"
+        },
+        {
+          "name": "Bank of Ghana, Digital Fraud and the Cost of Ignorance, 7 October 2026",
+          "url": "https://www.bog.gov.gh/wp-content/uploads/2026/10/PRESS-RELEASE-DIGITAL-FRAUD-AND-THE-COST-OF-IGNORANCE-071026.pdf"
+        }
+      ]
+    },
+    {
+      "id": "s07-too-good-investment",
+      "number": 7,
+      "title": "The too-good investment",
+      "headline": false,
+      "difficulty": "medium",
+      "surfaces": ["chat"],
+      "setup": "You saw a short video on social media. Someone has now messaged you privately.",
+      "steps": [
+        {
+          "type": "chat",
+          "contact": "GoldRise Daily",
+          "messages": [
+            {
+              "sender": "GoldRise Daily",
+              "time": "Today",
+              "text": "Hi. I saw you liked our post. Invest GHS 300 on PulsePay today and get GHS 900 back in 48 hours. No risk. I can also add you to our WhatsApp job group. First you pay the GHS 300 registration, then you start the online tasks."
+            },
+            {
+              "sender": "GoldRise Daily",
+              "time": "Today",
+              "text": "Send the PulsePay to 024 888 0101 now, then send me the screenshot. This slot closes in 20 minutes."
+            }
+          ]
+        }
+      ],
+      "choices": [
+        {
+          "id": "a",
+          "text": "Send GHS 300 and the screenshot so I can get GHS 900 and the job.",
+          "correct": false
+        },
+        {
+          "id": "b",
+          "text": "Do not send money. High, fast, no-risk returns and a job that starts with a registration fee are warning signs. Check official regulators, not this chat.",
+          "correct": true
+        },
+        {
+          "id": "c",
+          "text": "Send GHS 50 first to test whether they really pay.",
+          "correct": false
+        },
+        {
+          "id": "d",
+          "text": "Join the WhatsApp group first, then decide tomorrow.",
+          "correct": false
+        }
+      ],
+      "redFlags": [
+        "A promise of very high returns in a very short time, with \"no risk\".",
+        "Pressure to pay in 20 minutes.",
+        "A job or task that starts with you paying them.",
+        "Payment to a personal-looking wallet number, plus a request for a screenshot.",
+        "Official investment alerts describe this pattern: social media ads, mobile money payments, and promised returns that never come."
+      ],
+      "lesson": "If someone promises fast, no-risk money, or a job that starts with a fee, keep your money.",
+      "sources": [
+        {
+          "name": "CSA, Fraudulent Online Investment Schemes, 6 July 2026",
+          "url": "https://www.csa.gov.gh/cert-gh-alert45.php"
+        },
+        {
+          "name": "Bank of Ghana, Digital Fraud and the Cost of Ignorance, 7 October 2026",
+          "url": "https://www.bog.gov.gh/wp-content/uploads/2026/10/PRESS-RELEASE-DIGITAL-FRAUD-AND-THE-COST-OF-IGNORANCE-071026.pdf"
+        },
+        {
+          "name": "CSA, investment alert, 31 January 2025",
+          "url": "https://www.csa.gov.gh/cert-gh-alert36.php"
+        },
+        {
+          "name": "CSA alerts list, including Job Scams on the Rise, 16 January 2024",
+          "url": "https://csa.gov.gh/cert-gh-alerts"
+        }
+      ]
+    },
+    {
+      "id": "s08-sent-by-mistake",
+      "number": 8,
+      "title": "I sent the money by mistake",
+      "headline": false,
+      "difficulty": "medium",
+      "surfaces": ["sms", "call"],
+      "setup": "You receive an SMS, then a call, from a number you do not know.",
+      "steps": [
+        {
+          "type": "sms",
+          "sender": "055 642 1099",
+          "messages": [
+            {
+              "sender": "055 642 1099",
+              "time": "Today",
+              "text": "PulsePay Alert: You have received GHS 850 from AMA MENSAH. Your new balance is GHS 1,020. If this was a mistake, reverse now."
+            }
+          ]
+        },
+        {
+          "type": "call",
+          "callerId": "055 642 1099",
+          "callerLabel": "Unknown caller",
+          "lines": [
+            "Ama, please. I wanted to send the GHS 850 to my sister and I used your number by mistake. It is school fees. Please send it back now to 055 642 1099. If you delay, I will report you."
+          ]
+        }
+      ],
+      "choices": [
+        {
+          "id": "a",
+          "text": "Send GHS 850 back to 055 642 1099 straight away, because the SMS shows I received it.",
+          "correct": false
+        },
+        {
+          "id": "b",
+          "text": "Do not send any money. Ignore the SMS as proof. Check my real wallet balance and history in the official menu or official app. If money really arrived, tell the person to use the official reversal process. Never send it to a different number.",
+          "correct": true
+        },
+        {
+          "id": "c",
+          "text": "Give them my PIN so they can reverse it themselves.",
+          "correct": false
+        },
+        {
+          "id": "d",
+          "text": "Send GHS 400 now and the rest after I check later.",
+          "correct": false
+        }
+      ],
+      "redFlags": [
+        "The \"alert\" came from a personal phone number, not a known official channel.",
+        "An SMS is just text. It is not your wallet ledger.",
+        "Pressure, a sad story, and a threat to \"report you\".",
+        "They want you to send money to a number, instead of using an official reversal.",
+        "Even a real credit should not be sent on by you to a second number."
+      ],
+      "lesson": "Do not send money because of an SMS. Check the official wallet.",
+      "sources": [
+        {
+          "name": "CSA, Ways to Avoid Being a Victim of Mobile Money Fraud",
+          "url": "https://www.csa.gov.gh/mobile_money_fraud.php"
+        },
+        {
+          "name": "Bank of Ghana, Digital Fraud and the Cost of Ignorance, 7 October 2026",
+          "url": "https://www.bog.gov.gh/wp-content/uploads/2026/10/PRESS-RELEASE-DIGITAL-FRAUD-AND-THE-COST-OF-IGNORANCE-071026.pdf"
+        },
+        {
+          "name": "CSA, Fraudulent Online Business Impersonation Schemes, 30 April 2026",
+          "url": "https://www.csa.gov.gh/cert-gh-alert44.php"
+        }
+      ]
+    },
+    {
+      "id": "s09-agent-phone",
+      "number": 9,
+      "title": "The agent who wants your phone",
+      "headline": false,
+      "difficulty": "easy",
+      "surfaces": ["scene"],
+      "setup": "You are at a kiosk to deposit money into your PulsePay wallet.",
+      "steps": [
+        {
+          "type": "scene",
+          "place": "Kiosk",
+          "speaker": "Agent",
+          "line": "The network is slow on my side. Give me your phone and your PIN. I will do the deposit for you quickly. You can wait on the bench."
+        }
+      ],
+      "choices": [
+        {
+          "id": "a",
+          "text": "Give the agent my phone and PIN so it is faster.",
+          "correct": false
+        },
+        {
+          "id": "b",
+          "text": "Keep my phone. I enter the PIN myself, and I do not leave until I see an official confirmation.",
+          "correct": true
+        },
+        {
+          "id": "c",
+          "text": "Give the phone but type the PIN myself while the agent holds it.",
+          "correct": false
+        },
+        {
+          "id": "d",
+          "text": "Write my PIN on paper for the agent and keep my phone.",
+          "correct": false
+        }
+      ],
+      "redFlags": [
+        "Anyone asking to hold your phone or to hear your PIN.",
+        "Being asked to step away before you see a confirmation.",
+        "Official advice is explicit: do not give your phone to an agent to do a transaction, and agents are not to ask for your PIN."
+      ],
+      "lesson": "Keep your phone and your PIN, and wait for the official confirmation.",
+      "sources": [
+        {
+          "name": "CSA, Ways to Avoid Being a Victim of Mobile Money Fraud",
+          "url": "https://www.csa.gov.gh/mobile_money_fraud.php"
+        }
+      ]
+    },
+    {
+      "id": "s10-unexpected-prompt",
+      "number": 10,
+      "title": "The unexpected payment prompt",
+      "headline": false,
+      "difficulty": "medium",
+      "surfaces": ["sms", "prompt"],
+      "setup": "A prompt suddenly appears on your phone while you are not making a payment.",
+      "steps": [
+        {
+          "type": "sms",
+          "sender": "024 300 1199",
+          "messages": [
+            {
+              "sender": "024 300 1199",
+              "time": "Today",
+              "text": "PulsePay: Approve the prompt on your screen to receive your refund of GHS 200. If you did not request this, still approve, or your wallet will freeze."
+            }
+          ]
+        },
+        {
+          "type": "prompt",
+          "title": "PulsePay request",
+          "body": "Enter PIN to approve.",
+          "amount": "GHS 200.00",
+          "destination": "024 300 1199"
+        }
+      ],
+      "choices": [
+        {
+          "id": "a",
+          "text": "Enter my PIN, because I do not want my wallet to freeze and I want the refund.",
+          "correct": false
+        },
+        {
+          "id": "b",
+          "text": "Cancel the prompt. I did not start this payment. I will check my official wallet myself.",
+          "correct": true
+        },
+        {
+          "id": "c",
+          "text": "Approve it but change the amount to GHS 1 to test.",
+          "correct": false
+        },
+        {
+          "id": "d",
+          "text": "Call the number in the SMS and ask them to confirm.",
+          "correct": false
+        }
+      ],
+      "redFlags": [
+        "A payment prompt you did not start.",
+        "The SMS tells you to approve, and threatens a frozen wallet.",
+        "The prompt is a payment out of your wallet, not a refund in.",
+        "Official operators will not ask you to approve a prompt or share a PIN or OTP through a random SMS."
+      ],
+      "lesson": "A refund that asks for your PIN is a withdrawal.",
+      "sources": [
+        {
+          "name": "Bank of Ghana, Digital Fraud and the Cost of Ignorance, 7 October 2026",
+          "url": "https://www.bog.gov.gh/wp-content/uploads/2026/10/PRESS-RELEASE-DIGITAL-FRAUD-AND-THE-COST-OF-IGNORANCE-071026.pdf"
+        },
+        {
+          "name": "CSA, Ways to Avoid Being a Victim of Mobile Money Fraud",
+          "url": "https://www.csa.gov.gh/mobile_money_fraud.php"
+        },
+        {
+          "name": "CSA, Fraudulent Online Business Impersonation Schemes, 30 April 2026",
+          "url": "https://www.csa.gov.gh/cert-gh-alert44.php"
+        },
+        {
+          "name": "MTN Ghana, SCAM ALERT: Protect Your Personal Information, 11 May 2026",
+          "url": "https://mtn.com.gh/newsabout/scam-alert-protect-your-personal-information/"
+        }
+      ]
+    }
+  ]
+}
