@@ -6,7 +6,7 @@
 
 An in-app training simulator that walks Ghana mobile money users through realistic scam texts, chats and calls, scores their responses, and teaches the official red flags, without sending any real messages or collecting personal data.
 
-CloScam is a free, no-login trainer for a phone browser. People practise the channels they actually see: a chat, an SMS, a call script, and a fake payment page. Every fake surface is marked SIMULATION / TRAINING / NOT AFFILIATED. Names inside the drills are fictional (PulsePay, SwiftBundle, and similar). Official names appear only as citations on the sources page.
+CloScam is a free, no-login trainer for a phone browser. People practise the channels they actually see: a chat, a text message, a call script, and a fake payment page. Every fake surface is marked SIMULATION / TRAINING / NOT AFFILIATED. Names inside the drills are fictional (PulsePay, SwiftBundle, GoldRise Daily). Official names appear only as citations on the sources and feedback screens.
 
 This is not the first scam-training app. It is a free trainer built for Ghana mobile money, using local official advisories and the channels people here get scammed on.
 
@@ -14,17 +14,14 @@ Built for [GenHacks](https://genhacks-open.devpost.com/). Deadline: 26 December 
 
 ## How to run
 
-The product spec and the 10 drill scripts are in `docs/`. The Next.js training app is added in a pull request against `main`. After that code is merged:
-
-1. Install Node.js 20 or newer.
-2. From the repository root, install dependencies and start the dev server:
+Requirements: Node.js 20.9 or newer.
 
 ```bash
 npm install
 npm run dev
 ```
 
-3. Open http://localhost:3000 on a phone, or in a narrow browser window.
+Open http://localhost:3000 in a phone browser, or in a narrow desktop window. The first screen is a short disclaimer. No account, API key, or environment variable is required.
 
 A production build:
 
@@ -33,30 +30,35 @@ npm run build
 npm start
 ```
 
-No environment variables, API keys, or accounts are required. Nothing in the app sends an SMS, a chat, a call, or a payment.
+Then open http://localhost:3000.
+
+Nothing in the app sends an SMS, a chat, a call, or a payment. Do not type a real PIN. The drills use choice buttons only.
 
 ## Deploy on Vercel
 
-1. Import this GitHub repository in Vercel.
+1. Import this GitHub repository in the Vercel dashboard, or run the Vercel CLI from the repository root.
 2. Framework preset: Next.js. Root directory: the repository root.
-3. Leave environment variables empty. Do not add an analytics product that identifies people.
-4. Deploy. The site is a static-friendly Next.js app with no backend.
+3. Build command: `npm run build`. Output: the Next.js default.
+4. Leave environment variables empty. Do not add an analytics product that identifies people.
+5. Deploy. The app is static pages plus client-side progress stored in the browser.
+
+No backend, database, or server secret is used.
 
 ## Tools used
 
-- Next.js (App Router) and React, for the training app
-- TypeScript
-- Tailwind CSS
-- ESLint
+- Next.js 16 (App Router) and React 19, for the training app
+- TypeScript 5
+- Tailwind CSS 4
+- ESLint 9, with eslint-config-next
 - Node.js
 - Vercel, for the public deploy
 - GitHub, for the public repository
 
-No database, no authentication service, no payments SDK, and no analytics SDK. Drill scripts are static JSON shipped with the app. Optional progress is stored only in the browser.
+No database, no authentication service, no payments SDK, and no analytics SDK. Next.js anonymous framework telemetry is turned off in the npm scripts (`NEXT_TELEMETRY_DISABLED=1`). Drill scripts are static JSON in `data/scenarios.json`. Optional progress is stored only in the browser, under the key `closcam-progress`, and holds drill ids, first-try results, and a timestamp. No name is attached.
 
 ## Privacy
 
-CloScam does not collect personal data. It does not ask for a name, phone number, PIN, OTP, WhatsApp code, or contacts. Pasted text in the practice tool stays in the browser for that moment and is never stored or sent. Completing the drills does not guarantee safety.
+CloScam does not collect personal data. It does not ask for a name, phone number, PIN, OTP, WhatsApp code, or contacts. Pasted text in the practice tool stays in memory for that moment and is never stored or sent. Completing the drills does not guarantee safety.
 
 ## Docs
 
@@ -64,3 +66,7 @@ CloScam does not collect personal data. It does not ask for a name, phone number
 - [Drill scripts](docs/scenarios.md)
 
 If the two files differ on a drill, `docs/scenarios.md` is the source of truth for scripts, choices, red flags, lessons, and sources.
+
+## Licence
+
+MIT. See [LICENSE](LICENSE).

@@ -1,0 +1,34 @@
+import type { Metadata, Viewport } from "next";
+import "./globals.css";
+
+export const metadata: Metadata = {
+  title: {
+    default: "CloScam",
+    template: "%s - CloScam",
+  },
+  description:
+    "An in-app training simulator that walks Ghana mobile money users through realistic scam texts, chats and calls. No real messages. No personal data.",
+  applicationName: "CloScam",
+};
+
+export const viewport: Viewport = {
+  themeColor: "#0c6b4d",
+  width: "device-width",
+  initialScale: 1,
+};
+
+export default function RootLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <html lang="en">
+      <body className="flex min-h-full flex-col antialiased">
+        <a
+          href="#content"
+          className="sr-only focus:not-sr-only focus:absolute focus:left-3 focus:top-3 focus:z-50 focus:rounded-lg focus:bg-card focus:px-3 focus:py-2"
+        >
+          Skip to content
+        </a>
+        {children}
+      </body>
+    </html>
+  );
+}
