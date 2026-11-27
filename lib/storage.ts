@@ -152,3 +152,49 @@ function subscribeMounted() {
 export function useMounted(): boolean {
   return useSyncExternalStore(subscribeMounted, () => true, () => false);
 }
+
+const CALL_KEY = "closcam-call";
+const PROTECT_KEY = "closcam-protect";
+const EXTRA_EVENT = "closcam-extra";
+
+export function recordCall(correct: boolean): void {
+  if (window.localStorage.getItem(CALL_KEY)) return;
+  window.localStorage.setItem(
+    CALL_KEY,
+    JSON.stringify({ correct, at: new Date().toISOString() }),
+  );
+  window.dispatchEvent(new Event(EXTRA_EVENT));
+}
+
+export function recordProtect(): void {
+  window.localStorage.setItem(PROTECT_KEY, "done");
+  window.dispatchEvent(new Event(EXTRA_EVENT));
+}
+
+function subscribeExtra(onStoreChange: () => void) {
+  window.addEventListener(EXTRA_EVENT, onStoreChange);
+  window.addEventListener("storage", onStoreChange);
+  return () => {
+    window.removeEventListener(EXTRA_EVENT, onStoreChange);
+    window.removeEventListener("storage", onStoreChange);
+  };
+}
+
+export function useExtras(): { call: boolean | null; protect: boolean } {
+  const raw = useSyncExternalStore(
+    subscribeExtra,
+    () =>
+      `${window.localStorage.getItem(CALL_KEY) ?? ""}|${window.localStorage.getItem(PROTECT_KEY) ?? ""}`,
+    () => "|",
+  );
+  const [callRaw, protectRaw] = raw.split("|");
+  let call: boolean | null = null;
+  if (callRaw) {
+    try {
+      call = Boolean((JSON.parse(callRaw) as { correct?: boolean }).correct);
+    } catch {
+      call = null;
+    }
+  }
+  return { call, protect: protectRaw === "done" };
+}

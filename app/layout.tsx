@@ -1,4 +1,10 @@
 import type { Metadata, Viewport } from "next";
+import "@fontsource/ibm-plex-sans/latin-400.css";
+import "@fontsource/ibm-plex-sans/latin-500.css";
+import "@fontsource/ibm-plex-sans/latin-600.css";
+import "@fontsource/ibm-plex-serif/latin-400.css";
+import "@fontsource/ibm-plex-mono/latin-400.css";
+import "@fontsource/ibm-plex-mono/latin-500.css";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -12,7 +18,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#0c6b4d",
+  themeColor: "#0e0d0b",
   width: "device-width",
   initialScale: 1,
 };

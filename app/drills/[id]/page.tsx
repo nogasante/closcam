@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { DrillPlayer } from "@/components/DrillPlayer";
+import { TrainingRoom } from "@/components/live/TrainingRoom";
 import { getScenario, getScenarios } from "@/lib/scenarios";
 
 export const dynamicParams = false;
@@ -29,5 +29,5 @@ export default async function DrillPage({
   if (!scenario) {
     notFound();
   }
-  return <DrillPlayer key={scenario.id} scenario={scenario} />;
+  return <TrainingRoom key={scenario.id} scenario={scenario} />;
 }

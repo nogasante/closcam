@@ -1,6 +1,6 @@
-import { HomeScreen } from "@/components/HomeScreen";
+import { TrainingHub } from "@/components/hub/TrainingHub";
 import { drillSummaries } from "@/lib/scenarios";
 
 export default function HomePage() {
-  return <HomeScreen drills={drillSummaries()} />;
+  return <TrainingHub drills={drillSummaries()} />;
 }
