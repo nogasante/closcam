@@ -1,10 +1,8 @@
 "use client";
 
-import Image from "next/image";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { useReducedMotion } from "framer-motion";
 import { useSyncExternalStore } from "react";
-import poster from "@/public/hero/phones-poster.webp";
 import { HeroPhone } from "./HeroPhone";
 
 function useWide(): boolean {
@@ -35,7 +33,8 @@ export function HeroStage() {
   const wide = useWide();
   const reduce = useReducedMotion();
   const saveData = useSaveData();
-  const quiet = reduce || saveData;
+  const quiet = Boolean(reduce || saveData);
+  const [playing, setPlaying] = useState(false);
   const layer = useRef<HTMLDivElement>(null);
 
   function onMove(event: React.PointerEvent<HTMLDivElement>) {
@@ -50,44 +49,46 @@ export function HeroStage() {
     if (layer.current) layer.current.style.transform = "translate3d(0, 0, 0)";
   }
 
-  if (!wide) return <HeroPhone />;
-
   return (
-    <>
+    <div className="hero-slot">
+      <div className="hero-drawn">
+        <HeroPhone />
+      </div>
       <div
-        className="hero-stage relative w-full overflow-hidden bg-[#2D2E32]"
+        className="hero-stage relative w-full overflow-hidden"
         onPointerMove={onMove}
         onPointerLeave={onLeave}
       >
         <div ref={layer} className="hero-parallax absolute inset-0">
           <div className={quiet ? "absolute inset-0" : "hero-float absolute inset-0"}>
-            <Image
-              src={poster}
+            {/* The poster is already a small webp, and it has to be in the first HTML. */}
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/hero/phones-poster.webp"
               alt="Two phones on concrete steps. One shows a chat. The other shows an incoming call."
-              fill
-              priority
-              placeholder="blur"
-              sizes="(max-width: 1023px) 32px, 640px"
-              className="hero-still object-cover"
+              className="hero-still absolute inset-0 h-full w-full object-cover"
+              fetchPriority="high"
+              decoding="async"
             />
-            {quiet ? null : (
+            {wide && !quiet ? (
               <video
-                className="hero-film absolute inset-0 h-full w-full object-cover"
+                className={`hero-film absolute inset-0 h-full w-full object-cover${playing ? " is-on" : ""}`}
                 autoPlay
                 muted
                 loop
                 playsInline
-                preload="metadata"
+                preload="auto"
                 poster="/hero/phones-poster.webp"
+                onPlaying={() => setPlaying(true)}
                 aria-hidden="true"
               >
                 <source src="/hero/phones.webm" type="video/webm" />
                 <source src="/hero/phones.mp4" type="video/mp4" />
               </video>
-            )}
+            ) : null}
           </div>
         </div>
       </div>
-    </>
+    </div>
   );
 }

@@ -414,11 +414,26 @@ p, li {
   border-radius: 26px;
 }
 
+.hero-drawn {
+  display: block;
+}
+
 .hero-stage {
+  display: none;
   min-height: 520px;
   aspect-ratio: 5 / 4;
   border-radius: 28px;
   background: #2d2e32;
+}
+
+@media (min-width: 1024px) {
+  .hero-drawn {
+    display: none;
+  }
+
+  .hero-stage {
+    display: block;
+  }
 }
 
 .hero-parallax {
@@ -432,6 +447,14 @@ p, li {
 .hero-still,
 .hero-film {
   mask-image: radial-gradient(ellipse at 50% 52%, #000 64%, transparent 96%);
+}
+
+.hero-film {
+  opacity: 0;
+}
+
+.hero-film.is-on {
+  opacity: 1;
 }
 
 @keyframes hero-float {

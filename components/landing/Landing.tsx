@@ -2,11 +2,9 @@
 
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
-import { motion, useReducedMotion } from "framer-motion";
 import { ShieldCheck, MessageCircle, PhoneCall } from "lucide-react";
 import { useConsent } from "@/lib/storage";
 import { SiteFooter } from "@/components/SiteHeader";
-import { CountUp } from "@/components/motion/CountUp";
 import { HeroStage } from "./HeroStage";
 
 const STEPS = [
@@ -16,10 +14,8 @@ const STEPS = [
 ];
 
 export function Landing() {
-  const reduce = useReducedMotion();
   const consent = useConsent();
   const start = consent ? "/hub" : "/disclaimer";
-  const rise = reduce ? { opacity: 1, y: 0 } : undefined;
   const heroCta = useRef<HTMLAnchorElement>(null);
   const [navCta, setNavCta] = useState(false);
 
@@ -55,42 +51,18 @@ export function Landing() {
       </header>
       <section className="mx-auto grid w-full max-w-6xl items-center gap-10 px-4 pt-10 lg:grid-cols-[1fr_1.05fr] lg:gap-8 lg:px-8 lg:pt-16">
         <div>
-          <motion.h1
-            className="t-display max-w-[12ch]"
-            initial={reduce ? false : { opacity: 0.7, y: 8 }}
-            animate={rise ?? { opacity: 1, y: 0 }}
-            transition={{ duration: 0.3 }}
-          >
-            Shut scammers out before they get in.
-          </motion.h1>
-          <motion.p
-            className="mt-4 max-w-xl text-lg text-[#d5dbe4]"
-            initial={reduce ? false : { opacity: 0.7, y: 8 }}
-            animate={rise ?? { opacity: 1, y: 0 }}
-            transition={{ duration: 0.3 }}
-          >
-            Nothing real is sent.
-          </motion.p>
-          <motion.div
-            className="mt-8"
-            initial={reduce ? false : { opacity: 0.7, y: 8 }}
-            animate={rise ?? { opacity: 1, y: 0 }}
-            transition={{ duration: 0.3 }}
-          >
+          <h1 className="t-display max-w-[12ch]">Shut scammers out before they get in.</h1>
+          <p className="mt-4 max-w-xl text-lg text-[#d5dbe4]">Nothing real is sent.</p>
+          <div className="mt-8">
             <Link ref={heroCta} href={start} className="btn btn-primary sm:w-auto sm:px-6">
               Start training
             </Link>
-          </motion.div>
-          <motion.div
-            className="mt-8 grid max-w-xl grid-cols-3 gap-3"
-            initial={reduce ? false : { opacity: 0.7, y: 8 }}
-            animate={rise ?? { opacity: 1, y: 0 }}
-            transition={{ duration: 0.3 }}
-          >
+          </div>
+          <div className="mt-8 grid max-w-xl grid-cols-3 gap-3">
             <Stat value={24124} label="incidents, 2025" />
             <Stat value={37} prefix="GH¢" label="million at risk" />
             <Stat value={187} label="takeover reports" />
-          </motion.div>
+          </div>
           <p className="mt-3 text-sm text-[#d5dbe4]">
             <Link href="/sources" className="underline">
               Sources for the figures
@@ -101,16 +73,11 @@ export function Landing() {
       </section>
       <section className="mx-auto mt-16 grid w-full max-w-6xl gap-10 px-4 pb-4 md:grid-cols-3 lg:px-8">
         {STEPS.map((step) => (
-          <motion.article
-            key={step.title}
-            initial={reduce ? false : { opacity: 0.7, y: 8 }}
-            animate={rise ?? { opacity: 1, y: 0 }}
-            transition={{ duration: 0.3 }}
-          >
+          <article key={step.title}>
             <step.icon size={22} className="text-green" aria-hidden="true" />
             <h2 className="mt-3 text-lg font-extrabold">{step.title}</h2>
             <p className="mt-1 text-sm text-[#d5dbe4]">{step.text}</p>
-          </motion.article>
+          </article>
         ))}
       </section>
       <SiteFooter />
@@ -123,7 +90,7 @@ function Stat({ value, label, prefix = "" }: { value: number; label: string; pre
     <p>
       <span className="block text-xl font-extrabold tracking-tight sm:text-2xl">
         {prefix}
-        <CountUp to={value} />
+        {value.toLocaleString("en-GB")}
       </span>
       <span className="mt-1 block text-xs text-[#d5dbe4]">{label}</span>
     </p>
