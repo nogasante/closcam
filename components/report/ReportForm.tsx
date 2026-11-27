@@ -15,10 +15,11 @@ export function ReportForm() {
 
   async function onSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    const form = event.currentTarget;
     setPending(true);
     setError("");
     setMessage("");
-    const body = new FormData(event.currentTarget);
+    const body = new FormData(form);
     body.set("kind", dispute ? "dispute" : "report");
     try {
       const response = await fetch("/api/report", { method: "POST", body });
@@ -28,7 +29,7 @@ export function ReportForm() {
         return;
       }
       setMessage(dispute ? "Dispute sent." : "Report sent.");
-      event.currentTarget.reset();
+      form.reset();
       setFileName("");
     } catch {
       setError("Not sent.");
